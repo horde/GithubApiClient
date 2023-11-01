@@ -1,0 +1,24 @@
+{
+    "name": "horde/githubapiclient",
+    "type": "library",
+    "license": "LGPL-2.1",
+    "autoload": {
+        "psr-4": {
+            "Horde\\GithubApiClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ralf Lang",
+            "email": "ralf.lang@ralf-lang.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "horde/http": "dev-FRAMEWORK_6_0"
+    },
+    "require-dev": {
+        "horde/injector": "dev-FRAMEWORK_6_0",
+        "rector/rector": "dev-main"
+    }
+}
