@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * A demo client for the github client library
@@ -32,5 +33,7 @@ $injector->setInstance(RequestFactoryInterface::class, new RequestFactory());
 $injector->setInstance(GithubApiConfig::class, new GithubApiConfig(accessToken: $strGithubApiToken));
 $client = $injector->get(GithubApiClient::class);
 $repos = $client->listRepositoriesInOrganization(new GithubOrganizationId('horde'));
-
+foreach ($repos as $repo) {
+    echo $repo->getFullName() . "\n";
+}
 // List Releases of a repo
