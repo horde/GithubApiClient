@@ -24,9 +24,10 @@ class GithubRepositoryList implements IteratorAggregate
     {
         foreach ($elements as $element) {
             if ($element instanceof GithubRepository) {
-                $repositories[$element->getFullName()] = $element;
+                $this->repositories[$element->getFullName()] = $element;
             } elseif (is_array($element)) {
                 $repository = GithubRepository::fromApiArray($element);
+                $this->repositories[$repository->getFullName()] = $repository;
             }
             // TODO: Exception on inappropriate type
         }
