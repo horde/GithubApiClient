@@ -7,6 +7,7 @@ namespace Horde\GithubApiClient;
 use Horde\Http\RequestFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Exception;
 
 class GithubApiClient
 {
@@ -15,7 +16,6 @@ class GithubApiClient
         private readonly RequestFactoryInterface $requestFactory,
         private readonly GithubApiConfig $config
     ) {
-
     }
 
     public function listRepositoriesInOrganization(GithubOrganizationId $org): GithubRepositoryList
@@ -33,6 +33,9 @@ class GithubApiClient
                     break;
                 }
                 $request = $pagination->nextRequest();
+            } else {
+                throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+                break;
             }
         }
         return new GithubRepositoryList($repos);

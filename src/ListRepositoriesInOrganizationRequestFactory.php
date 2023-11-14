@@ -42,7 +42,6 @@ class ListRepositoriesInOrganizationRequestFactory
             $this->itemsPerPage,
             $this->page
         );
-        echo $uri;
         // TODO: URI Helper might be more elegant here
         $request = $this->requestFactory->createRequest('GET', $uri)
         ->withHeader('Accept', 'application/vnd.github+json')
