@@ -45,10 +45,10 @@ class GithubApiClient
     /**
      * @param array<mixed> $repos
      * @param string $json
-     *  
+     *
      * @return array<array<string|Stringable|int|null>>
      **/
-	private function parseJsonAndMerge(array $repos, string $json): array
+    private function parseJsonAndMerge(array $repos, string $json): array
     {
         $decoded = (array) json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         foreach ($decoded as $repoArray) {

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Horde\GithubApiClient;
+
 use Stringable;
 use InvalidArgumentException;
 
@@ -14,7 +15,6 @@ class GithubRepository
         private readonly string $description,
         private readonly string $cloneUrl
     ) {
-
     }
     public function getName(): string
     {
@@ -40,13 +40,14 @@ class GithubRepository
     public static function fromApiArray(array $apiArray): GithubRepository
     {
         if (self::isValidArrayRepresentation($apiArray)) {
-        // TODO: Map more fields as needed
-        return new GithubRepository(
-            name: (string) $apiArray['name'],
-            fullName:  (string) $apiArray['full_name'],
-            description:  (string) ($apiArray['description'] ?? ''),
-            cloneUrl:  (string)  $apiArray['clone_url'],
-        );}
+            // TODO: Map more fields as needed
+            return new GithubRepository(
+                name: (string) $apiArray['name'],
+                fullName:  (string) $apiArray['full_name'],
+                description:  (string) ($apiArray['description'] ?? ''),
+                cloneUrl:  (string)  $apiArray['clone_url'],
+            );
+        }
         throw new InvalidArgumentException();
     }
 
@@ -56,9 +57,8 @@ class GithubRepository
      */
     public static function isValidArrayRepresentation(array $apiArray): bool
     {
-        return array_key_exists('name', $apiArray) && 
-        array_key_exists('full_name', $apiArray) && 
+        return array_key_exists('name', $apiArray) &&
+        array_key_exists('full_name', $apiArray) &&
         array_key_exists('clone_url', $apiArray);
-        
     }
 }

@@ -19,7 +19,6 @@ class ListRepositoriesInOrganizationRequestFactory
         private readonly int $page = 1
         // TODO: Default filters, pagination, options
     ) {
-
     }
 
     public function withItemsPerPage(int $items): self

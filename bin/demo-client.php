@@ -4,6 +4,7 @@
  * A demo client for the github client library
  */
 declare(strict_types=1);
+
 namespace Horde\GithubApiClient;
 
 // Development Reference cli
