@@ -8,6 +8,8 @@ use Horde\Http\RequestFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Exception;
+use Stringable;
+use OutOfBoundsException;
 
 class GithubApiClient
 {
@@ -26,8 +28,7 @@ class GithubApiClient
         while (true) {
             $response = $this->httpClient->sendRequest($request);
             if ($response->getReasonPhrase() == 'OK') {
-                // Process response content
-                $repos = array_merge($repos, json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR));
+                $repos = $this->parseJsonAndMerge($repos, (string) $response->getBody());
                 $pagination = new GithubApiPagination($request, $response);
                 if (!$pagination->hasNextLink()) {
                     break;
@@ -35,9 +36,28 @@ class GithubApiClient
                 $request = $pagination->nextRequest();
             } else {
                 throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
-                break;
             }
         }
+
         return new GithubRepositoryList($repos);
+    }
+
+    /**
+     * @param array<mixed> $repos
+     * @param string $json
+     *  
+     * @return array<array<string|Stringable|int|null>>
+     **/
+	private function parseJsonAndMerge(array $repos, string $json): array
+    {
+        $decoded = (array) json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        foreach ($decoded as $repoArray) {
+            if (is_array($repoArray)) {
+                $repos[] = GithubRepository::isValidArrayRepresentation($repoArray) ? $repoArray : throw new OutOfBoundsException('Element does not contain correct structure');
+            } else {
+                throw new OutOfBoundsException('List does contain non-list element');
+            }
+        }
+        return $repos;
     }
 }
