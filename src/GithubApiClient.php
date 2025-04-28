@@ -50,7 +50,7 @@ class GithubApiClient
         $response = $this->httpClient->sendRequest($request);
         if ($response->getReasonPhrase() == 'OK') {
             $pullRequestData = json_decode((string) $response->getBody());
-            $prFactory = new GithubPullRequestFactory;
+            $prFactory = new GithubPullRequestFactory();
             foreach ($pullRequestData as $pr) {
                 $pullRequests[] = $prFactory->createFromApiResponse($pr);
             }

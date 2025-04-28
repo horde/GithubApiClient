@@ -17,8 +17,8 @@ class GithubPullRequestFactory
             htmlUrl: $apiResponse->html_url,
             apiUrl: $apiResponse->url,
             state: $apiResponse->state,
-            baseRepo: GithubRepository::fromApiArray((array)$apiResponse->base->repo),
-            headRepo: GithubRepository::fromApiArray((array)$apiResponse->head->repo),
+            baseRepo: GithubRepository::fromApiArray((array) $apiResponse->base->repo),
+            headRepo: GithubRepository::fromApiArray((array) $apiResponse->head->repo),
         );
     }
 }
