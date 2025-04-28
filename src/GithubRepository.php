@@ -51,6 +51,24 @@ class GithubRepository
         throw new InvalidArgumentException();
     }
 
+    public static function fromFullName(string $fullName, $apiUrl = ''): GithubRepository
+    {
+
+        if (empty($fullName)) {
+            throw new InvalidArgumentException('Full name cannot be empty');
+        }
+        $parts = explode('/', $fullName);
+        if (count($parts) !== 2) {
+            throw new InvalidArgumentException('Invalid full name format');
+        }
+        return new GithubRepository(
+            name: $parts[1],
+            fullName: $fullName,
+            description: '',
+            cloneUrl: $apiUrl
+        );
+    }
+
     /**
      * @phpstan-assert-if-true array{'name': string|Stringable, 'full_name': string|Stringable, 'clone_url': string|Stringable, 'description': string|Stringable|null} $apiArray
      * @param array<mixed> $apiArray

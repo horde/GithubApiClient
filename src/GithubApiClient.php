@@ -41,6 +41,24 @@ class GithubApiClient
 
         return new GithubRepositoryList($repos);
     }
+    public function listPullRequests(GithubRepository $repo, string $baseBranch = '', string $headRef = '', string $state = 'open' ): GithubPullRequestList
+    {
+        $pullRequests = [];
+    
+        $requestFactory = new ListPullRequestsRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create($repo, $baseBranch, $headRef);
+        // TODO: Pagination
+        $response = $this->httpClient->sendRequest($request);
+        if ($response->getReasonPhrase() == 'OK') {
+            $pullRequestData = json_decode((string)$response->getBody());
+            foreach ($pullRequestData as $pr) {
+                $pullRequests[] = new GithubPullRequest($pr);
+            }
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+        return new GithubPullRequestList($pullRequests);
+    }
 
     /**
      * @param array<mixed> $repos
