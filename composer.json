@@ -19,7 +19,9 @@
     },
     "require-dev": {
         "horde/injector": "dev-FRAMEWORK_6_0",
-        "rector/rector": "dev-main",
-        "phpunit/phpunit": "^12"
+        "rector/rector": "^2",
+        "phpunit/phpunit": "^12",
+        "friendsofphp/php-cs-fixer": "^3",
+        "phpstan/phpstan": "^2"
     }
 }

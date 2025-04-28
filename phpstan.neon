@@ -1,5 +1,6 @@
 parameters:
   level: 5
+  errorFormat: github
   treatPhpDocTypesAsCertain: false
   paths:
     - src
