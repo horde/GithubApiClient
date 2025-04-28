@@ -37,3 +37,7 @@ jobs:
       - name: Run phpstan (mandatory level)
         run: vendor/bin/phpstan --no-progress
 
+      - name: Run phpstan (level 9, allowed to fail)
+        run: vendor/bin/phpstan --no-progress --level=9
+        continue-on-error: true
+
