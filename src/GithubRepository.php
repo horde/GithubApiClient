@@ -51,7 +51,7 @@ class GithubRepository
         throw new InvalidArgumentException();
     }
 
-    public static function fromFullName(string $fullName, $apiUrl = ''): GithubRepository
+    public static function fromFullName(string $fullName, string $apiUrl = ''): GithubRepository
     {
 
         if (empty($fullName)) {

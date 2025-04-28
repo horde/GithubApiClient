@@ -19,7 +19,7 @@ class GithubPullRequestList implements IteratorAggregate
     private array $prs = [];
 
     /**
-     * @param iterable<GithubRepository|array<string|Stringable|int|null>> $elements
+     * @param iterable<GithubPullRequest|array<string|Stringable|int|null>> $elements
      */
     public function __construct(iterable $elements = [])
     {
@@ -30,7 +30,8 @@ class GithubPullRequestList implements IteratorAggregate
             // TODO: Exception on inappropriate type
         }
     }
-    public function getIterator(): Traversable
+
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->prs);
     }

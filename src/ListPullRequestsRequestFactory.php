@@ -28,7 +28,7 @@ class ListPullRequestsRequestFactory
     }
     public function withHeadRef(GithubOrganizationId $org, string $branch): self
     {
-        $this->headRef = $org->getId() . ':' . $branch;
+        $this->headRef = (string) $org . ':' . $branch;
         return $this;
     }
     public function withBaseBranch(string $branch): self

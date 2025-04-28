@@ -26,7 +26,7 @@ class ListRepositoriesInOrganizationRequestFactory
         return $this;
     }
 
-    public function create(GithubOrganizationId $org = null): RequestInterface
+    public function create(?GithubOrganizationId $org = null): RequestInterface
     {
         if (empty($org)) {
             $org = $this->defaultOrg;

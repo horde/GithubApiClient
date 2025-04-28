@@ -18,7 +18,7 @@ use Psr\Http\Message\RequestFactoryInterface;
  */
 final class GithubApiClientTest extends TestCase
 {
-    public function testCurlClientIsA()
+    public function testCurlClientIsA(): void
     {
         $strGithubApiToken = 'ght_fooGarbage';
         $httpClient = new CurlClient(new ResponseFactory(), new StreamFactory(), new Options());
