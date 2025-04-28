@@ -30,5 +30,7 @@ dependencies:
   dev:
     composer:
       phpunit/phpunit: ^12
+      friendsofphp/php-cs-fixer: ^3
+      phpstan/phpstan: ^2
 nocommands:
   - bin/demo-client.php
