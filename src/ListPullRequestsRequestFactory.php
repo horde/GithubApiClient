@@ -19,8 +19,7 @@ class ListPullRequestsRequestFactory
         private string $headRef = '',
         private string $baseBranch = '',
         // TODO: Default filters, pagination, options
-    ) {
-    }
+    ) {}
 
     public function withItemsPerPage(int $items): self
     {

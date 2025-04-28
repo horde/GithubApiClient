@@ -18,8 +18,7 @@ class ListRepositoriesInOrganizationRequestFactory
         private readonly string $sortBy = 'full_name',
         private readonly int $page = 1
         // TODO: Default filters, pagination, options
-    ) {
-    }
+    ) {}
 
     public function withItemsPerPage(int $items): self
     {

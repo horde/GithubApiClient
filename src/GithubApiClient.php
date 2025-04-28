@@ -17,8 +17,7 @@ class GithubApiClient
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
         private readonly GithubApiConfig $config
-    ) {
-    }
+    ) {}
 
     public function listRepositoriesInOrganization(GithubOrganizationId $org): GithubRepositoryList
     {
@@ -41,16 +40,16 @@ class GithubApiClient
 
         return new GithubRepositoryList($repos);
     }
-    public function listPullRequests(GithubRepository $repo, string $baseBranch = '', string $headRef = '', string $state = 'open' ): GithubPullRequestList
+    public function listPullRequests(GithubRepository $repo, string $baseBranch = '', string $headRef = '', string $state = 'open'): GithubPullRequestList
     {
         $pullRequests = [];
-    
+
         $requestFactory = new ListPullRequestsRequestFactory($this->requestFactory, $this->config);
         $request = $requestFactory->create($repo, $baseBranch, $headRef);
         // TODO: Pagination
         $response = $this->httpClient->sendRequest($request);
         if ($response->getReasonPhrase() == 'OK') {
-            $pullRequestData = json_decode((string)$response->getBody());
+            $pullRequestData = json_decode((string) $response->getBody());
             foreach ($pullRequestData as $pr) {
                 $pullRequests[] = new GithubPullRequest($pr);
             }

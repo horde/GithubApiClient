@@ -14,6 +14,5 @@ class GithubApiConfig
         // Default to no access token
         public readonly string $accessToken = '',
         public readonly string $apiVersion = '2022-11-28'
-    ) {
-    }
+    ) {}
 }

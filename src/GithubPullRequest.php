@@ -12,9 +12,7 @@ class GithubPullRequest implements Stringable
 {
     public function __construct(
         public readonly stdClass $originalApiArray = new stdClass(),
-    ) {
-
-    }
+    ) {}
 
     public function getNumber(): int
     {

@@ -14,8 +14,7 @@ class GithubRepository
         private readonly string $fullName,
         private readonly string $description,
         private readonly string $cloneUrl
-    ) {
-    }
+    ) {}
     public function getName(): string
     {
         return $this->name;
@@ -43,9 +42,9 @@ class GithubRepository
             // TODO: Map more fields as needed
             return new GithubRepository(
                 name: (string) $apiArray['name'],
-                fullName:  (string) $apiArray['full_name'],
-                description:  (string) ($apiArray['description'] ?? ''),
-                cloneUrl:  (string)  $apiArray['clone_url'],
+                fullName: (string) $apiArray['full_name'],
+                description: (string) ($apiArray['description'] ?? ''),
+                cloneUrl: (string) $apiArray['clone_url'],
             );
         }
         throw new InvalidArgumentException();

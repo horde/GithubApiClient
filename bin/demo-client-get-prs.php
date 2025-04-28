@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * A demo client for the github client library
  */
