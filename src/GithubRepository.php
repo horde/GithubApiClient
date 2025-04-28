@@ -6,6 +6,7 @@ namespace Horde\GithubApiClient;
 
 use Stringable;
 use InvalidArgumentException;
+use stdClass;
 
 class GithubRepository
 {

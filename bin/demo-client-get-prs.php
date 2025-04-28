@@ -37,5 +37,5 @@ $client = $injector->get(GithubApiClient::class);
 
 $res = $client->listPullRequests(GithubRepository::fromFullName('horde/components'), headRef: 'horde:feat/conventional-commits', baseBranch: 'FRAMEWORK_6_0');
 foreach ($res as $pr) {
-    echo '#' . $pr->getNumber() . ' ' . $pr->getTitle() . ' ' . $pr->getHtmlUrl() . "\n";
+    echo '#' . $pr->number . ' ' . $pr->title . ' ' . $pr->htmlUrl . "\n";
 }
