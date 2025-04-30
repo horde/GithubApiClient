@@ -1,8 +1,10 @@
 name: Pull Request Chores
 on:
   pull_request:
-    branches:
-      - FRAMEWORK_6_0
+    types:
+      - opened
+      - edited
+      - reopened
   workflow_dispatch:
 
 jobs:
