@@ -34,3 +34,4 @@ dependencies:
       phpstan/phpstan: ^2
 nocommands:
   - bin/demo-client.php
+  - bin/demo-client-get-prs.php
