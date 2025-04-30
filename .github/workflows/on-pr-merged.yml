@@ -1,9 +1,12 @@
 name: After-Merge Chores
 on:
   pull_request:
-    branches:
-      - FRAMEWORK_6_0
+    types:
+      - closed
+  # branches:
+  #   - FRAMEWORK_6_0
   workflow_dispatch:
+
 
 jobs:
   PostMerge:
