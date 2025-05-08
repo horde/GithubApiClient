@@ -1,6 +1,6 @@
 # horde/githubapiclient
 
-A horde/http based client for the Github REST API.
+A horde/http based client for the [Github REST API](https://docs.github.com/en/rest).
 
 ## Usage
 
