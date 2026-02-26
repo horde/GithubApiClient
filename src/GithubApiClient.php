@@ -7,6 +7,7 @@ namespace Horde\GithubApiClient;
 use Horde\Http\RequestFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Exception;
 use Stringable;
 use OutOfBoundsException;
@@ -16,7 +17,8 @@ class GithubApiClient
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
-        private readonly GithubApiConfig $config
+        private readonly GithubApiConfig $config,
+        private readonly ?StreamFactoryInterface $streamFactory = null
     ) {}
 
     public function listRepositoriesInOrganization(GithubOrganizationId $org): GithubRepositoryList
@@ -117,6 +119,41 @@ class GithubApiClient
             $this->config,
             $repo,
             $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $prFactory = new GithubPullRequestFactory();
+            return $prFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Update a pull request (title, body, base, or state)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @param PullRequestUpdate $update The fields to update
+     * @return GithubPullRequest The updated pull request
+     * @throws Exception
+     */
+    public function updatePullRequest(GithubRepository $repo, int $number, PullRequestUpdate $update): GithubPullRequest
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updatePullRequest. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdatePullRequestRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $update
         );
         $request = $requestFactory->create();
         $response = $this->httpClient->sendRequest($request);
