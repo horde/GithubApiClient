@@ -14,8 +14,9 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
 /**
- * @coversNothing
+ * Basic integration test for GithubApiClient
  */
+#[\PHPUnit\Framework\Attributes\CoversNothing]
 final class GithubApiClientTest extends TestCase
 {
     public function testCurlClientIsA(): void
