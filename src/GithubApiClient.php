@@ -423,6 +423,142 @@ class GithubApiClient
     }
 
     /**
+     * List labels on an issue or pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue or pull request number
+     * @return GithubLabelList
+     * @throws Exception
+     */
+    public function listIssueLabels(GithubRepository $repo, int $number): GithubLabelList
+    {
+        $requestFactory = new ListIssueLabelsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $labelFactory = new GithubLabelFactory();
+            $labels = [];
+            foreach ($data as $labelData) {
+                $labels[] = $labelFactory->createFromApiResponse($labelData);
+            }
+            return new GithubLabelList($labels);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Add labels to an issue or pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue or pull request number
+     * @param array<string> $labels Label names to add
+     * @return GithubLabelList The updated list of labels
+     * @throws Exception
+     */
+    public function addLabels(GithubRepository $repo, int $number, array $labels): GithubLabelList
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for addLabels. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new AddLabelsRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $labels
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $labelFactory = new GithubLabelFactory();
+            $labelsList = [];
+            foreach ($data as $labelData) {
+                $labelsList[] = $labelFactory->createFromApiResponse($labelData);
+            }
+            return new GithubLabelList($labelsList);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Set (replace) all labels on an issue or pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue or pull request number
+     * @param array<string> $labels Label names to set (replaces all existing labels)
+     * @return GithubLabelList The updated list of labels
+     * @throws Exception
+     */
+    public function setLabels(GithubRepository $repo, int $number, array $labels): GithubLabelList
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for setLabels. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new SetLabelsRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $labels
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $labelFactory = new GithubLabelFactory();
+            $labelsList = [];
+            foreach ($data as $labelData) {
+                $labelsList[] = $labelFactory->createFromApiResponse($labelData);
+            }
+            return new GithubLabelList($labelsList);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Remove a label from an issue or pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue or pull request number
+     * @param string $labelName The name of the label to remove
+     * @return void
+     * @throws Exception
+     */
+    public function removeLabel(GithubRepository $repo, int $number, string $labelName): void
+    {
+        $requestFactory = new RemoveLabelRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number,
+            $labelName
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
