@@ -15,7 +15,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "horde/http": "dev-FRAMEWORK_6_0"
+        "horde/http": "dev-FRAMEWORK_6_0",
+        "php": "^8.3"
     },
     "require-dev": {
         "horde/injector": "dev-FRAMEWORK_6_0",

@@ -25,7 +25,7 @@ class RateLimit
     public static function fromApiResponse(object $response): self
     {
         $core = $response->resources->core ?? throw new \InvalidArgumentException('Invalid rate limit response structure');
-        
+
         return new self(
             limit: $core->limit ?? 0,
             remaining: $core->remaining ?? 0,
@@ -74,7 +74,7 @@ class RateLimit
      */
     public function getResetDateTime(): \DateTimeImmutable
     {
-        return \DateTimeImmutable::createFromFormat('U', (string) $this->reset) 
+        return \DateTimeImmutable::createFromFormat('U', (string) $this->reset)
             ?: throw new \RuntimeException('Failed to create DateTime from reset timestamp');
     }
 }

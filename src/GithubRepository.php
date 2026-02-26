@@ -75,8 +75,8 @@ class GithubRepository
      */
     public static function isValidArrayRepresentation(array $apiArray): bool
     {
-        return array_key_exists('name', $apiArray) &&
-        array_key_exists('full_name', $apiArray) &&
-        array_key_exists('clone_url', $apiArray);
+        return array_key_exists('name', $apiArray)
+        && array_key_exists('full_name', $apiArray)
+        && array_key_exists('clone_url', $apiArray);
     }
 }
