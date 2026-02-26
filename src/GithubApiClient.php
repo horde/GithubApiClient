@@ -559,6 +559,54 @@ class GithubApiClient
     }
 
     /**
+     * Merge a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @param MergePullRequestParams $params Merge parameters
+     * @return MergeResult The result of the merge operation
+     * @throws Exception
+     */
+    public function mergePullRequest(GithubRepository $repo, int $number, MergePullRequestParams $params): MergeResult
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for mergePullRequest. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new MergePullRequestRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return MergeResult::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Close a pull request without merging
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @return GithubPullRequest The closed pull request
+     * @throws Exception
+     */
+    public function closePullRequest(GithubRepository $repo, int $number): GithubPullRequest
+    {
+        $update = new PullRequestUpdate(state: 'closed');
+        return $this->updatePullRequest($repo, $number, $update);
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
