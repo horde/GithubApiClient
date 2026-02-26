@@ -363,6 +363,66 @@ class GithubApiClient
     }
 
     /**
+     * Get combined status for a commit
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $ref The commit SHA, branch name, or tag name
+     * @return GithubCombinedStatus
+     * @throws Exception
+     */
+    public function getCombinedStatus(GithubRepository $repo, string $ref): GithubCombinedStatus
+    {
+        $requestFactory = new GetCombinedStatusRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $ref
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubCombinedStatus::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * List check runs for a commit
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $ref The commit SHA, branch name, or tag name
+     * @return GithubCheckRunList
+     * @throws Exception
+     */
+    public function listCheckRuns(GithubRepository $repo, string $ref): GithubCheckRunList
+    {
+        $requestFactory = new ListCheckRunsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $ref
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $checkRuns = [];
+            if (isset($data->check_runs) && is_array($data->check_runs)) {
+                foreach ($data->check_runs as $checkRunData) {
+                    $checkRuns[] = GithubCheckRun::fromApiResponse($checkRunData);
+                }
+            }
+            return new GithubCheckRunList($checkRuns);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
