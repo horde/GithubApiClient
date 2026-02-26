@@ -654,6 +654,136 @@ class GithubApiClient
     }
 
     /**
+     * Create a new release for a tag
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreateReleaseParams $params The release parameters
+     * @return GithubRelease The created release
+     * @throws Exception
+     */
+    public function createRelease(GithubRepository $repo, CreateReleaseParams $params): GithubRelease
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createRelease. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateReleaseRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubRelease::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Get a release by tag name
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $tag The tag name
+     * @return GithubRelease The release
+     * @throws Exception
+     */
+    public function getReleaseByTag(GithubRepository $repo, string $tag): GithubRelease
+    {
+        $requestFactory = new GetReleaseByTagRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $tag
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubRelease::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Update an existing release
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $releaseId The release ID
+     * @param UpdateReleaseParams $params The update parameters
+     * @return GithubRelease The updated release
+     * @throws Exception
+     */
+    public function updateRelease(GithubRepository $repo, int $releaseId, UpdateReleaseParams $params): GithubRelease
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateRelease. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateReleaseRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $releaseId,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubRelease::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Upload an asset to a release
+     *
+     * @param string $uploadUrl The upload URL from the release object
+     * @param string $filename The filename for the asset
+     * @param string $fileContent The file content
+     * @param string $contentType The MIME type (default: application/octet-stream)
+     * @return GithubReleaseAsset The uploaded asset
+     * @throws Exception
+     */
+    public function uploadReleaseAsset(string $uploadUrl, string $filename, string $fileContent, string $contentType = 'application/octet-stream'): GithubReleaseAsset
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for uploadReleaseAsset. Please provide it in the constructor.');
+        }
+
+        $stream = $this->streamFactory->createStream($fileContent);
+
+        $requestFactory = new UploadReleaseAssetRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $uploadUrl,
+            $filename,
+            $stream,
+            $contentType
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubReleaseAsset::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
