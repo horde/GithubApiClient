@@ -46,7 +46,7 @@ class CreatePullRequestParams
             'title' => $this->title,
             'head' => $this->head,
             'base' => $this->base,
-            'maintainer_can_modify' => $this->maintainerCanModify
+            'maintainer_can_modify' => $this->maintainerCanModify,
         ];
 
         if ($this->body !== '') {
