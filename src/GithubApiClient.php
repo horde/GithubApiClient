@@ -168,6 +168,132 @@ class GithubApiClient
     }
 
     /**
+     * List all comments on a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @return GithubCommentList
+     * @throws Exception
+     */
+    public function listPullRequestComments(GithubRepository $repo, int $number): GithubCommentList
+    {
+        $requestFactory = new ListPullRequestCommentsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $commentFactory = new GithubCommentFactory();
+            $comments = [];
+            foreach ($data as $commentData) {
+                $comments[] = $commentFactory->createFromApiResponse($commentData);
+            }
+            return new GithubCommentList($comments);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Create a comment on a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @param string $body The comment body
+     * @return GithubComment The created comment
+     * @throws Exception
+     */
+    public function createPullRequestComment(GithubRepository $repo, int $number, string $body): GithubComment
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createPullRequestComment. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreatePullRequestCommentRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $body
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            $commentFactory = new GithubCommentFactory();
+            return $commentFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Update a comment
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $commentId The comment ID
+     * @param string $body The new comment body
+     * @return GithubComment The updated comment
+     * @throws Exception
+     */
+    public function updateComment(GithubRepository $repo, int $commentId, string $body): GithubComment
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateComment. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateCommentRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $commentId,
+            $body
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $commentFactory = new GithubCommentFactory();
+            return $commentFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Delete a comment
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $commentId The comment ID
+     * @return void
+     * @throws Exception
+     */
+    public function deleteComment(GithubRepository $repo, int $commentId): void
+    {
+        $requestFactory = new DeleteCommentRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $commentId
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
