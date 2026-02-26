@@ -13,7 +13,7 @@ class TokenScopes
     private readonly array $scopes;
 
     /**
-     * @param array<string> $scopes
+     * @param array<mixed> $scopes Array of scope strings (non-strings will be filtered out)
      */
     public function __construct(array $scopes)
     {
