@@ -138,6 +138,62 @@ if ($demoRepo && strpos($demoRepo, '/') !== false) {
     echo "4-8. Skipped (set DEMO_REPO=owner/repo to see PR examples)\n\n";
 }
 
+// Example 9: Create a pull request (if CREATE_PR_DEMO=1 is set)
+if (getenv('CREATE_PR_DEMO') === '1' && $demoRepo && strpos($demoRepo, '/') !== false) {
+    [$owner, $name] = explode('/', $demoRepo, 2);
+    $repo = new GithubRepository(owner: $owner, name: $name);
+
+    echo "9. Creating a demo pull request:\n";
+
+    $headBranch = getenv('PR_HEAD_BRANCH') ?: 'demo-branch';
+    $baseBranch = getenv('PR_BASE_BRANCH') ?: 'main';
+
+    try {
+        $createParams = new CreatePullRequestParams(
+            title: 'Demo PR - API Client Test',
+            head: $headBranch,
+            base: $baseBranch,
+            body: "This is a demo pull request created by the GitHub API Client.\n\n" .
+                  "Created at: " . date('Y-m-d H:i:s') . "\n" .
+                  "This PR can be safely closed.",
+            draft: (getenv('PR_DRAFT') === '1'),
+            maintainerCanModify: true
+        );
+
+        $newPr = $client->createPullRequest($repo, $createParams);
+        echo "  ✓ Created PR #{$newPr->number}: {$newPr->title}\n";
+        echo "  URL: {$newPr->htmlUrl}\n";
+        echo "  State: {$newPr->state}\n";
+        echo "  Draft: " . ($newPr->draft ? 'Yes' : 'No') . "\n";
+
+        // Example 10: Demonstrate reopen functionality by closing and reopening
+        if (getenv('DEMO_REOPEN') === '1') {
+            echo "\n10. Demonstrating close and reopen:\n";
+
+            // Close the PR
+            $closedPr = $client->closePullRequest($repo, $newPr->number);
+            echo "  ✓ Closed PR #{$closedPr->number}, state: {$closedPr->state}\n";
+
+            sleep(1); // Brief pause for API rate limiting
+
+            // Reopen the PR
+            $reopenedPr = $client->reopenPullRequest($repo, $newPr->number);
+            echo "  ✓ Reopened PR #{$reopenedPr->number}, state: {$reopenedPr->state}\n";
+        }
+
+    } catch (\Exception $e) {
+        echo "  ✗ Error: {$e->getMessage()}\n";
+        echo "  Note: Make sure the head branch exists and differs from base branch\n";
+    }
+    echo "\n";
+}
+
 echo "=== Demo Complete ===\n";
 echo "\nTo see PR-related examples, export DEMO_REPO=owner/repo\n";
 echo "Example: export DEMO_REPO=horde/components\n";
+echo "\nTo test PR creation, also set:\n";
+echo "  CREATE_PR_DEMO=1        Enable PR creation demo\n";
+echo "  PR_HEAD_BRANCH=branch   Source branch (default: demo-branch)\n";
+echo "  PR_BASE_BRANCH=branch   Target branch (default: main)\n";
+echo "  PR_DRAFT=1              Create as draft PR\n";
+echo "  DEMO_REOPEN=1           Demonstrate close/reopen functionality\n";

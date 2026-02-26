@@ -607,6 +607,53 @@ class GithubApiClient
     }
 
     /**
+     * Reopen a closed pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @return GithubPullRequest The reopened pull request
+     * @throws Exception
+     */
+    public function reopenPullRequest(GithubRepository $repo, int $number): GithubPullRequest
+    {
+        $update = new PullRequestUpdate(state: 'open');
+        return $this->updatePullRequest($repo, $number, $update);
+    }
+
+    /**
+     * Create a new pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreatePullRequestParams $params The pull request parameters
+     * @return GithubPullRequest The created pull request
+     * @throws Exception
+     */
+    public function createPullRequest(GithubRepository $repo, CreatePullRequestParams $params): GithubPullRequest
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createPullRequest. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreatePullRequestRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            $prFactory = new GithubPullRequestFactory();
+            return $prFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
