@@ -25,7 +25,7 @@ class RateLimitRequestFactory
     public function create(): RequestInterface
     {
         $uri = sprintf('%s/rate_limit', $this->config->endpoint);
-        
+
         return $this->requestFactory->createRequest('GET', $uri)
             ->withHeader('Accept', 'application/vnd.github+json')
             ->withHeader('Authorization', 'Bearer ' . $this->config->accessToken)

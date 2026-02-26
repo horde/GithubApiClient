@@ -116,7 +116,7 @@ final class RateLimitTest extends TestCase
         );
 
         $seconds = $rateLimit->getSecondsUntilReset();
-        
+
         // Allow for some time passage during test execution
         $this->assertGreaterThanOrEqual(3595, $seconds);
         $this->assertLessThanOrEqual(3600, $seconds);

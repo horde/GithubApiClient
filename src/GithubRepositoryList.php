@@ -27,10 +27,10 @@ class GithubRepositoryList implements IteratorAggregate
             if ($element instanceof GithubRepository) {
                 $this->repositories[$element->getFullName()] = $element;
             } elseif (
-                is_array($element) &&
-                array_key_exists('name', $element) &&
-                array_key_exists('full_name', $element) &&
-                array_key_exists('clone_url', $element)) {
+                is_array($element)
+                && array_key_exists('name', $element)
+                && array_key_exists('full_name', $element)
+                && array_key_exists('clone_url', $element)) {
                 $repository = GithubRepository::fromApiArray($element);
                 $this->repositories[$repository->getFullName()] = $repository;
             }
