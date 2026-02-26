@@ -10,12 +10,20 @@ use stdClass;
 
 class GithubRepository
 {
+    public readonly string $owner;
+    public readonly string $name;
+
     public function __construct(
-        private readonly string $name,
+        string $name,
         private readonly string $fullName,
         private readonly string $description,
         private readonly string $cloneUrl
-    ) {}
+    ) {
+        $this->name = $name;
+        // Extract owner from fullName
+        $parts = explode('/', $fullName, 2);
+        $this->owner = $parts[0] ?? '';
+    }
     public function getName(): string
     {
         return $this->name;
