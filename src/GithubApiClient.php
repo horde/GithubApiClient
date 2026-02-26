@@ -294,6 +294,75 @@ class GithubApiClient
     }
 
     /**
+     * List all reviews on a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @return GithubReviewList
+     * @throws Exception
+     */
+    public function listPullRequestReviews(GithubRepository $repo, int $number): GithubReviewList
+    {
+        $requestFactory = new ListPullRequestReviewsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $reviewFactory = new GithubReviewFactory();
+            $reviews = [];
+            foreach ($data as $reviewData) {
+                $reviews[] = $reviewFactory->createFromApiResponse($reviewData);
+            }
+            return new GithubReviewList($reviews);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Request reviewers for a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @param array<string> $reviewers User logins to request as reviewers
+     * @param array<string> $teamReviewers Team slugs to request as reviewers
+     * @return GithubPullRequest The updated pull request
+     * @throws Exception
+     */
+    public function requestReviewers(GithubRepository $repo, int $number, array $reviewers = [], array $teamReviewers = []): GithubPullRequest
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for requestReviewers. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new RequestReviewersRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $reviewers,
+            $teamReviewers
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            $prFactory = new GithubPullRequestFactory();
+            return $prFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
