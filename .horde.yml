@@ -2,8 +2,7 @@
 id: githubapiclient
 name: GithubApiClient
 full: Interact with the Github API from PHP code
-description: >-
-  Github REST API Client.
+description: Github REST API Client.
 list: horde
 type: library
 authors:
@@ -14,7 +13,7 @@ authors:
     active: true
     role: contributor
 version:
-  release: 0.0.1alpha1
+  release: 0.0.1-alpha2
   api: 0.0.1alpha1
 state:
   release: alpha

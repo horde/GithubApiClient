@@ -1,0 +1,30 @@
+---
+0.0.1-alpha2:
+  api: 0.0.1-alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-02-26
+  license:
+    identifier: LGPL-2.1-only
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: |
+    style: fix php-cs-fixer trailing comma issue
+    fix: add public owner and name properties to GithubRepository
+    refactor: add factory method and warning to GithubPullRequest
+    feat: add create and reopen pull request functionality
+    docs: add comprehensive documentation and examples
+    feat: add pull request merge and close support
+    feat: add label management support
+    feat: add commit status and check runs support
+    feat: add pull request review management
+    feat: add pull request comment management
+    feat: add pull request update capability
+    feat: add enhanced pull request API with user and label support
+    fix: Update TokenScopes constructor type hint for PHPStan
+    style: Apply php-cs-fixer and fix deprecations
+    fix: Convert remaining @covers annotations to PHPUnit 12 attributes
+    fix: Add missing PSR HTTP interfaces and upgrade PHPUnit annotations
+    feat: Add rate limit and token permissions checking support
+    feat(ci): Add simple on-pr pipeline
+    ci: Stub of phpunit12 compatible test framework

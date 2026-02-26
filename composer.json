@@ -1,31 +1,48 @@
 {
     "name": "horde/githubapiclient",
+    "description": "Interact with the Github API from PHP code",
     "type": "library",
-    "license": "LGPL-2.1",
+    "homepage": "https://www.horde.org",
+    "license": "LGPL-2.1-only",
+    "authors": [
+        {
+            "name": "Ralf Lang",
+            "email": "ralf.lang@ralf-lang.de",
+            "role": "contributor"
+        }
+    ],
+    "time": "2026-02-26",
+    "repositories": [],
+    "require": {
+        "php": "^8.3",
+        "horde/http": "* || dev-FRAMEWORK_6_0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12",
+        "friendsofphp/php-cs-fixer": "^3",
+        "phpstan/phpstan": "^2"
+    },
+    "suggest": {},
     "autoload": {
         "psr-4": {
             "Horde\\GithubApiClient\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "Ralf Lang",
-            "email": "ralf.lang@ralf-lang.de"
+    "autoload-dev": {
+        "psr-4": {
+            "Horde\\GithubApiClient\\Test\\": "test/"
         }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "horde/http": "dev-FRAMEWORK_6_0",
-        "php": "^8.3"
     },
-    "require-dev": {
-        "horde/injector": "dev-FRAMEWORK_6_0",
-        "rector/rector": "^2",
-        "phpunit/phpunit": "^12",
-        "friendsofphp/php-cs-fixer": "^3",
-        "phpstan/phpstan": "^2",
-        "psr/http-client": "^1.0@dev",
-        "psr/http-message": "^2.0@dev",
-        "psr/http-factory": "^1.1"
+    "bin": [
+        "bin/demo-client-get-prs.php",
+        "bin/demo-token-info.php"
+    ],
+    "config": {
+        "allow-plugins": {}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-FRAMEWORK_6_0": "0.x-dev"
+        }
     }
 }
