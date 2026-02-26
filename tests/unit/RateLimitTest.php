@@ -7,9 +7,7 @@ namespace Horde\GithubApiClient;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 
-/**
- * @covers \Horde\GithubApiClient\RateLimit
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Horde\GithubApiClient\RateLimit::class)]
 final class RateLimitTest extends TestCase
 {
     public function testConstructorSetsProperties(): void

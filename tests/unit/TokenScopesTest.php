@@ -6,9 +6,7 @@ namespace Horde\GithubApiClient;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Horde\GithubApiClient\TokenScopes
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Horde\GithubApiClient\TokenScopes::class)]
 final class TokenScopesTest extends TestCase
 {
     public function testConstructorFiltersDuplicatesAndNonStrings(): void
