@@ -23,6 +23,11 @@ use InvalidArgumentException;
 class GithubPullRequest implements Stringable
 {
     /**
+     * Constructor - typically not called directly, use fromApiResponse() instead
+     *
+     * @internal This constructor has 20 parameters and should not be called directly by users.
+     *           Use GithubPullRequest::fromApiResponse() or retrieve PRs via GithubApiClient methods.
+     *
      * @param int $number PR number
      * @param string $title PR title
      * @param string $body PR description/body
@@ -70,5 +75,19 @@ class GithubPullRequest implements Stringable
     public function __toString(): string
     {
         return $this->htmlUrl;
+    }
+
+    /**
+     * Create GithubPullRequest from GitHub API response
+     *
+     * This is the recommended way to create GithubPullRequest objects.
+     *
+     * @param object $data Decoded JSON from GitHub API
+     * @return self
+     */
+    public static function fromApiResponse(object $data): self
+    {
+        $factory = new GithubPullRequestFactory();
+        return $factory->createFromApiResponse($data);
     }
 }
