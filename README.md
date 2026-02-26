@@ -41,11 +41,13 @@ $pullRequests = $client->listPullRequests($repo);
 - Get repository details
 
 ### Pull Requests
+- Create new pull requests
 - List pull requests with filters (base branch, head ref, state)
 - Get a single pull request with complete details
 - Update pull request (title, body, base branch, state)
 - Merge pull requests (merge, squash, or rebase)
 - Close pull requests
+- Reopen closed pull requests
 
 ### Comments
 - List all comments on a pull request
@@ -107,6 +109,39 @@ echo "Mergeable: " . ($pr->mergeable ? 'Yes' : 'No') . "\n";
 echo "Draft: " . ($pr->draft ? 'Yes' : 'No') . "\n";
 ```
 
+#### Create Pull Request
+
+```php
+use Horde\GithubApiClient\CreatePullRequestParams;
+
+// Create a regular pull request
+$params = new CreatePullRequestParams(
+    title: 'Add new feature',
+    head: 'feature-branch',
+    base: 'main',
+    body: 'This PR adds a new feature\n\nCloses #123'
+);
+$newPr = $client->createPullRequest($repo, $params);
+
+// Create a draft pull request
+$draftParams = new CreatePullRequestParams(
+    title: 'Work in progress',
+    head: 'wip-branch',
+    base: 'develop',
+    body: 'This is still being worked on',
+    draft: true
+);
+$draftPr = $client->createPullRequest($repo, $draftParams);
+
+// Create PR from a fork
+$forkParams = new CreatePullRequestParams(
+    title: 'Fix from fork',
+    head: 'username:feature-branch',  // Format: username:branch
+    base: 'main'
+);
+$forkPr = $client->createPullRequest($repo, $forkParams);
+```
+
 #### Update Pull Request
 
 ```php
@@ -124,11 +159,10 @@ $update = new PullRequestUpdate(base: 'develop');
 $updatedPr = $client->updatePullRequest($repo, 123, $update);
 
 // Close a pull request
-$update = new PullRequestUpdate(state: 'closed');
-$updatedPr = $client->updatePullRequest($repo, 123, $update);
-
-// Or use the convenience method
 $closedPr = $client->closePullRequest($repo, 123);
+
+// Reopen a closed pull request
+$reopenedPr = $client->reopenPullRequest($repo, 123);
 ```
 
 #### Merge Pull Request

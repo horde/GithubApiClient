@@ -79,6 +79,23 @@ public function getPullRequest(
 
 **Returns:** Complete pull request details
 
+#### createPullRequest()
+
+Create a new pull request.
+
+```php
+public function createPullRequest(
+    GithubRepository $repo,
+    CreatePullRequestParams $params
+): GithubPullRequest
+```
+
+**Parameters:**
+- `$repo` - The repository
+- `$params` - Pull request creation parameters
+
+**Returns:** The created pull request
+
 #### updatePullRequest()
 
 Update a pull request's title, body, base branch, or state.
@@ -92,6 +109,19 @@ public function updatePullRequest(
 ```
 
 **Returns:** Updated pull request
+
+#### reopenPullRequest()
+
+Reopen a closed pull request.
+
+```php
+public function reopenPullRequest(
+    GithubRepository $repo,
+    int $number
+): GithubPullRequest
+```
+
+**Returns:** Reopened pull request
 
 #### mergePullRequest()
 
@@ -475,6 +505,34 @@ All collection classes implement `Iterator` and `Countable` interfaces.
 - Plus all standard iterator methods
 
 ## DTOs
+
+### CreatePullRequestParams
+
+Data transfer object for creating pull requests.
+
+```php
+public function __construct(
+    public readonly string $title,
+    public readonly string $head,
+    public readonly string $base,
+    public readonly string $body = '',
+    public readonly bool $draft = false,
+    public readonly bool $maintainerCanModify = true
+)
+```
+
+**Parameters:**
+- `$title` - The title of the pull request (required)
+- `$head` - The name of the branch where your changes are (required)
+  - Can be a simple branch name: `'feature-branch'`
+  - Can include owner prefix for forks: `'username:feature-branch'`
+- `$base` - The name of the branch you want changes pulled into (required)
+- `$body` - The description/body of the pull request (optional)
+- `$draft` - Whether to create as a draft PR (optional, default: false)
+- `$maintainerCanModify` - Whether maintainers can modify the PR (optional, default: true)
+
+**Methods:**
+- `toArray(): array` - Convert to API payload
 
 ### PullRequestUpdate
 
