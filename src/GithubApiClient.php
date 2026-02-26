@@ -103,6 +103,34 @@ class GithubApiClient
     }
 
     /**
+     * Get a single pull request with complete details
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @return GithubPullRequest
+     * @throws Exception
+     */
+    public function getPullRequest(GithubRepository $repo, int $number): GithubPullRequest
+    {
+        $requestFactory = new GetPullRequestRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $prFactory = new GithubPullRequestFactory();
+            return $prFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
