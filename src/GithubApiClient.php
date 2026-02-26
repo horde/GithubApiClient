@@ -61,6 +61,48 @@ class GithubApiClient
     }
 
     /**
+     * Get current rate limit status for the authenticated user
+     *
+     * @return RateLimit
+     * @throws Exception
+     */
+    public function getRateLimit(): RateLimit
+    {
+        $requestFactory = new RateLimitRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getReasonPhrase() == 'OK') {
+            $data = json_decode((string) $response->getBody());
+            return RateLimit::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
+     * Get OAuth scopes/permissions for the current access token
+     *
+     * @return TokenScopes
+     * @throws Exception
+     */
+    public function getTokenScopes(): TokenScopes
+    {
+        $requestFactory = new AuthenticatedUserRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getReasonPhrase() == 'OK') {
+            // Parse X-OAuth-Scopes header
+            $scopesHeader = $response->getHeader('X-OAuth-Scopes');
+            $scopesValue = !empty($scopesHeader) ? $scopesHeader[0] : '';
+            return TokenScopes::fromHeader($scopesValue);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
