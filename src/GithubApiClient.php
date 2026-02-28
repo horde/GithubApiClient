@@ -7,6 +7,7 @@ namespace Horde\GithubApiClient;
 use Horde\Http\RequestFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Exception;
 use Stringable;
@@ -392,7 +393,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubReview::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -683,7 +684,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -834,5 +835,58 @@ class GithubApiClient
             }
         }
         return $repos;
+    }
+
+    /**
+     * Parse GitHub API error response and create detailed exception message
+     *
+     * Extracts detailed error information from GitHub API responses to provide
+     * more helpful error messages to users.
+     *
+     * @param ResponseInterface $response The HTTP response
+     * @return string Detailed error message
+     */
+    private function parseErrorResponse(ResponseInterface $response): string
+    {
+        $statusCode = $response->getStatusCode();
+        $reasonPhrase = $response->getReasonPhrase();
+        $baseMessage = "{$statusCode} {$reasonPhrase}";
+
+        try {
+            $body = (string) $response->getBody();
+            $errorData = json_decode($body);
+
+            if (!$errorData) {
+                // Not JSON or invalid JSON
+                return $baseMessage;
+            }
+
+            $details = [];
+
+            // GitHub provides detailed errors in an array
+            if (isset($errorData->errors) && is_array($errorData->errors)) {
+                foreach ($errorData->errors as $error) {
+                    if (is_string($error)) {
+                        $details[] = $error;
+                    } elseif (is_object($error) && isset($error->message)) {
+                        $details[] = $error->message;
+                    }
+                }
+            }
+
+            // Fallback to message field
+            if (empty($details) && isset($errorData->message) && $errorData->message !== $reasonPhrase) {
+                $details[] = $errorData->message;
+            }
+
+            if (!empty($details)) {
+                return $baseMessage . ': ' . implode('; ', $details);
+            }
+
+            return $baseMessage;
+        } catch (\Exception $e) {
+            // If anything goes wrong parsing, return base message
+            return $baseMessage;
+        }
     }
 }
