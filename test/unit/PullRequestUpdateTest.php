@@ -7,8 +7,10 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Horde\GithubApiClient\PullRequestUpdate;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(PullRequestUpdate::class)]
+#[AllowMockObjectsWithoutExpectations]
 class PullRequestUpdateTest extends TestCase
 {
     public function testConstructorWithAllFields(): void

@@ -13,6 +13,7 @@ use Horde\GithubApiClient\GithubReleaseAsset;
 use Horde\GithubApiClient\GithubRepository;
 use Horde\GithubApiClient\UpdateReleaseParams;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -32,6 +33,7 @@ use Psr\Http\Message\StreamInterface;
  * @license  http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
 #[CoversClass(GithubApiClient::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubApiClientReleaseTest extends TestCase
 {
     public function testCreateReleaseSuccess(): void

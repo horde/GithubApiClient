@@ -8,8 +8,10 @@ use Horde\GithubApiClient\GithubReview;
 use Horde\GithubApiClient\GithubUser;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubReview::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubReviewTest extends TestCase
 {
     public function testConstructorWithAllParameters(): void

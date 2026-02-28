@@ -8,9 +8,11 @@ use Horde\GithubApiClient\GithubCommitStatus;
 use Horde\GithubApiClient\GithubCombinedStatus;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubCommitStatus::class)]
 #[CoversClass(GithubCombinedStatus::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubStatusTest extends TestCase
 {
     public function testCommitStatusConstructor(): void
