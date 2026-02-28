@@ -7,8 +7,10 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Horde\GithubApiClient\GithubRepository;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubRepository::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubRepositoryTest extends TestCase
 {
     public function testFromFullNameParsesOwnerAndName(): void

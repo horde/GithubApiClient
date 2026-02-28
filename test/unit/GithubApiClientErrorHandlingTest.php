@@ -10,6 +10,7 @@ use Horde\GithubApiClient\GithubApiConfig;
 use Horde\GithubApiClient\GithubRepository;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -18,6 +19,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 #[CoversClass(GithubApiClient::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubApiClientErrorHandlingTest extends TestCase
 {
     public function testCreatePullRequestThrowsOn422UnprocessableEntity(): void
@@ -167,5 +169,46 @@ class GithubApiClientErrorHandlingTest extends TestCase
         $this->expectExceptionMessage('403 Forbidden');
 
         $client->createPullRequest($repo, $params);
+    }
+
+    public function testCreateReviewThrowsDetailedErrorOn422(): void
+    {
+        // This test covers the improved error handling that includes GitHub's detailed error messages
+
+        $httpClient = $this->createMock(ClientInterface::class);
+        $requestFactory = $this->createMock(RequestFactoryInterface::class);
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $config = new GithubApiConfig(accessToken: 'test-token');
+
+        $request = $this->createMock(RequestInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+
+        $requestFactory->method('createRequest')->willReturn($request);
+        $request->method('withHeader')->willReturnSelf();
+        $request->method('withBody')->willReturnSelf();
+        $streamFactory->method('createStream')->willReturn($stream);
+
+        // Mock 422 response with detailed GitHub error message
+        $response->method('getStatusCode')->willReturn(422);
+        $response->method('getReasonPhrase')->willReturn('Unprocessable Entity');
+        $errorBody = json_encode([
+            'message' => 'Unprocessable Entity',
+            'errors' => ['Review Can not approve your own pull request'],
+            'documentation_url' => 'https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request'
+        ]);
+        $errorStream = $this->createMock(StreamInterface::class);
+        $errorStream->method('__toString')->willReturn($errorBody);
+        $response->method('getBody')->willReturn($errorStream);
+        $httpClient->method('sendRequest')->willReturn($response);
+
+        $client = new GithubApiClient($httpClient, $requestFactory, $config, $streamFactory);
+        $repo = \Horde\GithubApiClient\GithubRepository::fromFullName('horde/hordectl');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('422 Unprocessable Entity: Review Can not approve your own pull request');
+
+        $params = new \Horde\GithubApiClient\CreateReviewParams(event: 'APPROVE', body: '');
+        $client->createReview($repo, 1, $params);
     }
 }

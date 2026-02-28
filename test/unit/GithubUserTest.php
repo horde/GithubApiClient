@@ -7,8 +7,10 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Horde\GithubApiClient\GithubUser;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubUser::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubUserTest extends TestCase
 {
     public function testConstructorWithAllParameters(): void

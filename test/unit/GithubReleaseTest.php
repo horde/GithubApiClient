@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Horde\GithubApiClient;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  * @license  http://www.horde.org/licenses/lgpl21 LGPL 2.1
  */
 #[CoversClass(GithubRelease::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubReleaseTest extends TestCase
 {
     public function testConstruction(): void

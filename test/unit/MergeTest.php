@@ -8,9 +8,11 @@ use Horde\GithubApiClient\MergePullRequestParams;
 use Horde\GithubApiClient\MergeResult;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(MergePullRequestParams::class)]
 #[CoversClass(MergeResult::class)]
+#[AllowMockObjectsWithoutExpectations]
 class MergeTest extends TestCase
 {
     public function testMergePullRequestParamsConstructorDefaults(): void

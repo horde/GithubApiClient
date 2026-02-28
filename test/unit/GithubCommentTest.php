@@ -8,8 +8,10 @@ use Horde\GithubApiClient\GithubComment;
 use Horde\GithubApiClient\GithubUser;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubComment::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubCommentTest extends TestCase
 {
     public function testConstructorWithAllParameters(): void

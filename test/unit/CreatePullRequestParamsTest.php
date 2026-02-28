@@ -7,8 +7,10 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Horde\GithubApiClient\CreatePullRequestParams;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(CreatePullRequestParams::class)]
+#[AllowMockObjectsWithoutExpectations]
 class CreatePullRequestParamsTest extends TestCase
 {
     public function testConstructorWithRequiredParameters(): void

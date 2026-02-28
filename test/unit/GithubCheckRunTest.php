@@ -7,8 +7,10 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Horde\GithubApiClient\GithubCheckRun;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[CoversClass(GithubCheckRun::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubCheckRunTest extends TestCase
 {
     public function testConstructorWithAllParameters(): void
