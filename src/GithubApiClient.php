@@ -37,7 +37,7 @@ class GithubApiClient
                 }
                 $request = $pagination->nextRequest();
             } else {
-                throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+                throw new Exception($this->parseErrorResponse($response));
             }
         }
 
@@ -58,7 +58,7 @@ class GithubApiClient
                 $pullRequests[] = $prFactory->createFromApiResponse($pr);
             }
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
         return new GithubPullRequestList($pullRequests);
     }
@@ -79,7 +79,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return RateLimit::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -101,7 +101,7 @@ class GithubApiClient
             $scopesValue = !empty($scopesHeader) ? $scopesHeader[0] : '';
             return TokenScopes::fromHeader($scopesValue);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -129,7 +129,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -164,7 +164,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -196,7 +196,7 @@ class GithubApiClient
             }
             return new GithubCommentList($comments);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -231,7 +231,7 @@ class GithubApiClient
             $commentFactory = new GithubCommentFactory();
             return $commentFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -266,7 +266,7 @@ class GithubApiClient
             $commentFactory = new GithubCommentFactory();
             return $commentFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -290,7 +290,7 @@ class GithubApiClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -322,7 +322,7 @@ class GithubApiClient
             }
             return new GithubReviewList($reviews);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -359,7 +359,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -420,7 +420,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubCombinedStatus::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -453,7 +453,7 @@ class GithubApiClient
             }
             return new GithubCheckRunList($checkRuns);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -485,7 +485,7 @@ class GithubApiClient
             }
             return new GithubLabelList($labels);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -524,7 +524,7 @@ class GithubApiClient
             }
             return new GithubLabelList($labelsList);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -563,7 +563,7 @@ class GithubApiClient
             }
             return new GithubLabelList($labelsList);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -589,7 +589,7 @@ class GithubApiClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() !== 200) {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -623,7 +623,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return MergeResult::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -716,7 +716,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubRelease::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -743,7 +743,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubRelease::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -777,7 +777,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubRelease::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
@@ -814,7 +814,33 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubReleaseAsset::fromApiResponse($data);
         } else {
-            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Get the authenticated user
+     *
+     * Retrieves information about the user associated with the current access token.
+     * Useful for verifying credentials and getting the current user's identity.
+     *
+     * @return GithubUser The authenticated user
+     * @throws Exception If the request fails
+     */
+    public function getCurrentUser(): GithubUser
+    {
+        $requestFactory = new AuthenticatedUserRequestFactory(
+            $this->requestFactory,
+            $this->config
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubUser::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
         }
     }
 
