@@ -10,6 +10,7 @@ use Horde\GithubApiClient\GithubApiConfig;
 use Horde\GithubApiClient\GithubRepository;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -18,6 +19,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 #[CoversClass(GithubApiClient::class)]
+#[AllowMockObjectsWithoutExpectations]
 class GithubApiClientErrorHandlingTest extends TestCase
 {
     public function testCreatePullRequestThrowsOn422UnprocessableEntity(): void
