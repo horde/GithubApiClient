@@ -363,6 +363,40 @@ class GithubApiClient
     }
 
     /**
+     * Create a review for a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The pull request number
+     * @param CreateReviewParams $params The review parameters
+     * @return GithubReview The created review
+     * @throws Exception
+     */
+    public function createReview(GithubRepository $repo, int $number, CreateReviewParams $params): GithubReview
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createReview. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateReviewRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubReview::fromApiResponse($data);
+        } else {
+            throw new Exception($response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        }
+    }
+
+    /**
      * Get combined status for a commit
      *
      * @param GithubRepository $repo The repository
