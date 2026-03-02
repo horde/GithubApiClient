@@ -845,6 +845,91 @@ class GithubApiClient
     }
 
     /**
+     * Create an installation access token for GitHub App
+     *
+     * @param int $installationId The installation ID
+     * @param CreateInstallationAccessTokenParams $params Optional parameters
+     * @return InstallationAccessToken
+     * @throws Exception
+     */
+    public function createInstallationAccessToken(
+        int $installationId,
+        CreateInstallationAccessTokenParams $params = new CreateInstallationAccessTokenParams()
+    ): InstallationAccessToken
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createInstallationAccessToken');
+        }
+
+        $requestFactory = new CreateInstallationAccessTokenRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $installationId,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return InstallationAccessToken::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * List all installations of the authenticated GitHub App
+     *
+     * @return GithubInstallationList
+     * @throws Exception
+     */
+    public function listInstallations(): GithubInstallationList
+    {
+        $requestFactory = new ListInstallationsRequestFactory(
+            $this->requestFactory,
+            $this->config
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $installations = [];
+            foreach ($data as $installationData) {
+                $installations[] = GithubInstallation::fromApiResponse($installationData);
+            }
+            return new GithubInstallationList($installations);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Get the authenticated GitHub App
+     *
+     * @return GithubApp
+     * @throws Exception
+     */
+    public function getAuthenticatedApp(): GithubApp
+    {
+        $requestFactory = new GetAuthenticatedAppRequestFactory(
+            $this->requestFactory,
+            $this->config
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubApp::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
      * @param array<mixed> $repos
      * @param string $json
      *
