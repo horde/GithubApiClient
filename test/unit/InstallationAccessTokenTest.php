@@ -45,9 +45,9 @@ class InstallationAccessTokenTest extends TestCase
             'permissions' => [
                 'contents' => 'write',
                 'issues' => 'read',
-                'metadata' => 'read'
+                'metadata' => 'read',
             ],
-            'repository_selection' => 'all'
+            'repository_selection' => 'all',
         ]));
 
         $token = InstallationAccessToken::fromApiResponse($data);
@@ -57,7 +57,7 @@ class InstallationAccessTokenTest extends TestCase
         $this->assertSame([
             'contents' => 'write',
             'issues' => 'read',
-            'metadata' => 'read'
+            'metadata' => 'read',
         ], $token->permissions);
         $this->assertSame('all', $token->repositorySelection);
     }
@@ -66,7 +66,7 @@ class InstallationAccessTokenTest extends TestCase
     {
         $data = json_decode(json_encode([
             'token' => 'ghs_minimal',
-            'expires_at' => '2026-03-02T14:00:00Z'
+            'expires_at' => '2026-03-02T14:00:00Z',
         ]));
 
         $token = InstallationAccessToken::fromApiResponse($data);
@@ -84,9 +84,9 @@ class InstallationAccessTokenTest extends TestCase
             'expires_at' => '2026-03-02T15:00:00Z',
             'permissions' => [
                 'pull_requests' => 'write',
-                'checks' => 'read'
+                'checks' => 'read',
             ],
-            'repository_selection' => 'selected'
+            'repository_selection' => 'selected',
         ]));
 
         $token = InstallationAccessToken::fromApiResponse($data);
@@ -103,7 +103,7 @@ class InstallationAccessTokenTest extends TestCase
         $dataAll = json_decode(json_encode([
             'token' => 'ghs_all',
             'expires_at' => '2026-03-02T16:00:00Z',
-            'repository_selection' => 'all'
+            'repository_selection' => 'all',
         ]));
 
         $tokenAll = InstallationAccessToken::fromApiResponse($dataAll);
@@ -113,7 +113,7 @@ class InstallationAccessTokenTest extends TestCase
         $dataSelected = json_decode(json_encode([
             'token' => 'ghs_selected',
             'expires_at' => '2026-03-02T17:00:00Z',
-            'repository_selection' => 'selected'
+            'repository_selection' => 'selected',
         ]));
 
         $tokenSelected = InstallationAccessToken::fromApiResponse($dataSelected);

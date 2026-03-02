@@ -62,7 +62,7 @@ class CreatePullRequestParamsTest extends TestCase
             'title' => 'Test PR',
             'head' => 'test',
             'base' => 'main',
-            'maintainer_can_modify' => true
+            'maintainer_can_modify' => true,
         ], $array);
     }
 
@@ -85,7 +85,7 @@ class CreatePullRequestParamsTest extends TestCase
             'base' => 'main',
             'maintainer_can_modify' => false,
             'body' => 'Test description',
-            'draft' => true
+            'draft' => true,
         ], $array);
     }
 

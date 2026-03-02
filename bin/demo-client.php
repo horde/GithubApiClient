@@ -153,9 +153,9 @@ if (getenv('CREATE_PR_DEMO') === '1' && $demoRepo && strpos($demoRepo, '/') !== 
             title: 'Demo PR - API Client Test',
             head: $headBranch,
             base: $baseBranch,
-            body: "This is a demo pull request created by the GitHub API Client.\n\n" .
-                  "Created at: " . date('Y-m-d H:i:s') . "\n" .
-                  "This PR can be safely closed.",
+            body: "This is a demo pull request created by the GitHub API Client.\n\n"
+                  . "Created at: " . date('Y-m-d H:i:s') . "\n"
+                  . "This PR can be safely closed.",
             draft: (getenv('PR_DRAFT') === '1'),
             maintainerCanModify: true
         );

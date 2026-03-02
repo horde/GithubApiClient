@@ -45,12 +45,12 @@ echo "╚═══════════════════════�
 try {
     echo "📊 Checking Rate Limit...\n";
     $rateLimit = $client->getRateLimit();
-    
+
     echo "  ├─ Limit:     " . number_format($rateLimit->limit) . " requests/hour\n";
     echo "  ├─ Used:      " . number_format($rateLimit->used) . " requests\n";
     echo "  ├─ Remaining: " . number_format($rateLimit->remaining) . " requests\n";
     echo "  ├─ Usage:     " . number_format($rateLimit->getUsagePercentage(), 1) . "%\n";
-    
+
     if ($rateLimit->isExhausted()) {
         echo "  └─ ⚠️  EXHAUSTED - Resets at " . $rateLimit->getResetDateTime()->format('Y-m-d H:i:s T') . "\n";
     } else {
@@ -58,7 +58,7 @@ try {
         $minutes = floor($seconds / 60);
         echo "  └─ ✓ Resets in " . $minutes . " minutes (" . $rateLimit->getResetDateTime()->format('Y-m-d H:i:s T') . ")\n";
     }
-    
+
     echo "\n";
 } catch (\Exception $e) {
     echo "  └─ ✗ Error: " . $e->getMessage() . "\n\n";
@@ -68,7 +68,7 @@ try {
 try {
     echo "🔐 Checking Token Scopes/Permissions...\n";
     $scopes = $client->getTokenScopes();
-    
+
     if ($scopes->isEmpty()) {
         echo "  └─ ⚠️  No scopes granted (token may be invalid)\n\n";
     } else {
@@ -80,14 +80,14 @@ try {
         echo "  │   ├─ Write Repositories: " . ($scopes->canWriteRepositories() ? "✓ YES" : "✗ NO") . "\n";
         echo "  │   └─ Read Organizations: " . ($scopes->canReadOrganizations() ? "✓ YES" : "✗ NO") . "\n";
         echo "  │\n";
-        
+
         // List all individual scopes
         echo "  └─ Individual Scopes:\n";
         foreach ($scopes->toArray() as $scope) {
             echo "      • " . $scope . "\n";
         }
     }
-    
+
     echo "\n";
 } catch (\Exception $e) {
     echo "  └─ ✗ Error: " . $e->getMessage() . "\n\n";

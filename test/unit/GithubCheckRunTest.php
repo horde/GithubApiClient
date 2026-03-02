@@ -66,7 +66,7 @@ class GithubCheckRunTest extends TestCase
             'html_url' => 'https://github.com/org/repo/runs/999888',
             'details_url' => 'https://github.com/org/repo/runs/999888/details',
             'started_at' => '2026-02-26T11:00:00Z',
-            'completed_at' => null
+            'completed_at' => null,
         ];
 
         $checkRun = GithubCheckRun::fromApiResponse($data);

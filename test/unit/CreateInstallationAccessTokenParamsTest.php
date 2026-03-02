@@ -110,7 +110,7 @@ class CreateInstallationAccessTokenParamsTest extends TestCase
 
         $this->assertSame([
             'repositories' => ['test-repo'],
-            'permissions' => ['metadata' => 'read']
+            'permissions' => ['metadata' => 'read'],
         ], $array);
     }
 }

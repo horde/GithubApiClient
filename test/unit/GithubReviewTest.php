@@ -75,13 +75,13 @@ class GithubReviewTest extends TestCase
                 'id' => 333,
                 'avatar_url' => 'https://avatar.example.com/apireviewer.png',
                 'html_url' => 'https://github.com/apireviewer',
-                'type' => 'User'
+                'type' => 'User',
             ],
             'body' => 'API review comment',
             'state' => 'CHANGES_REQUESTED',
             'html_url' => 'https://github.com/org/repo/pull/5#pullrequestreview-111222',
             'submitted_at' => '2026-02-15T14:30:00Z',
-            'commit_id' => 'def789ghi012'
+            'commit_id' => 'def789ghi012',
         ];
 
         $review = GithubReview::fromApiResponse($data);
@@ -98,7 +98,7 @@ class GithubReviewTest extends TestCase
     public function testFromApiResponseWithMinimalData(): void
     {
         $data = (object) [
-            'user' => (object) []
+            'user' => (object) [],
         ];
 
         $review = GithubReview::fromApiResponse($data);
