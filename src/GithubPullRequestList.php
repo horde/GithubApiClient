@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Horde\GithubApiClient;
 
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
 use Traversable;
 use OutOfBoundsException;
 use Stringable;
 
 /** @implements \IteratorAggregate<int, GithubRepository> */
-class GithubPullRequestList implements IteratorAggregate
+class GithubPullRequestList implements IteratorAggregate, Countable
 {
     /**
      * @var GithubPullRequest[]
@@ -34,5 +35,10 @@ class GithubPullRequestList implements IteratorAggregate
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->prs);
+    }
+
+    public function count(): int
+    {
+        return count($this->prs);
     }
 }
