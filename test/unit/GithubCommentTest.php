@@ -74,12 +74,12 @@ class GithubCommentTest extends TestCase
                 'id' => 777,
                 'avatar_url' => 'https://avatar.example.com/api.png',
                 'html_url' => 'https://github.com/apiuser',
-                'type' => 'User'
+                'type' => 'User',
             ],
             'created_at' => '2026-01-15T08:30:00Z',
             'updated_at' => '2026-01-15T09:45:00Z',
             'html_url' => 'https://github.com/org/repo/pull/5#issuecomment-999888',
-            'url' => 'https://api.github.com/repos/org/repo/issues/comments/999888'
+            'url' => 'https://api.github.com/repos/org/repo/issues/comments/999888',
         ];
 
         $comment = GithubComment::fromApiResponse($data);
@@ -96,7 +96,7 @@ class GithubCommentTest extends TestCase
     public function testFromApiResponseWithMinimalData(): void
     {
         $data = (object) [
-            'user' => (object) []
+            'user' => (object) [],
         ];
 
         $comment = GithubComment::fromApiResponse($data);

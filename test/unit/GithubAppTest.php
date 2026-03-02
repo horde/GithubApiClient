@@ -60,10 +60,10 @@ class GithubAppTest extends TestCase
                 'id' => 999,
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/999',
                 'html_url' => 'https://github.com/org-name',
-                'type' => 'Organization'
+                'type' => 'Organization',
             ],
             'created_at' => '2024-06-01T00:00:00Z',
-            'updated_at' => '2026-03-01T12:00:00Z'
+            'updated_at' => '2026-03-01T12:00:00Z',
         ]));
 
         $app = GithubApp::fromApiResponse($data);
@@ -81,7 +81,7 @@ class GithubAppTest extends TestCase
     public function testFromApiResponseWithMinimalData(): void
     {
         $data = json_decode(json_encode([
-            'id' => 1
+            'id' => 1,
         ]));
 
         $app = GithubApp::fromApiResponse($data);
@@ -122,10 +122,10 @@ class GithubAppTest extends TestCase
                 'id' => 333,
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/333',
                 'html_url' => 'https://github.com/bot-user',
-                'type' => 'Bot'
+                'type' => 'Bot',
             ],
             'created_at' => '2025-12-01T00:00:00Z',
-            'updated_at' => '2026-01-15T00:00:00Z'
+            'updated_at' => '2026-01-15T00:00:00Z',
         ]));
 
         $app = GithubApp::fromApiResponse($data);

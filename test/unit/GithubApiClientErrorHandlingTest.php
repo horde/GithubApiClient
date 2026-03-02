@@ -195,7 +195,7 @@ class GithubApiClientErrorHandlingTest extends TestCase
         $errorBody = json_encode([
             'message' => 'Unprocessable Entity',
             'errors' => ['Review Can not approve your own pull request'],
-            'documentation_url' => 'https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request'
+            'documentation_url' => 'https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request',
         ]);
         $errorStream = $this->createMock(StreamInterface::class);
         $errorStream->method('__toString')->willReturn($errorBody);

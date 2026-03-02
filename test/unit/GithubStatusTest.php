@@ -56,7 +56,7 @@ class GithubStatusTest extends TestCase
             'description' => 'Running integration tests',
             'target_url' => 'https://ci.example.com/build/789',
             'created_at' => '2026-02-26T11:00:00Z',
-            'updated_at' => '2026-02-26T11:01:00Z'
+            'updated_at' => '2026-02-26T11:01:00Z',
         ];
 
         $status = GithubCommitStatus::fromApiResponse($data);
@@ -128,7 +128,7 @@ class GithubStatusTest extends TestCase
                     'description' => 'Test 1 passed',
                     'target_url' => 'https://ci.example.com/1',
                     'created_at' => '2026-02-26T12:00:00Z',
-                    'updated_at' => '2026-02-26T12:01:00Z'
+                    'updated_at' => '2026-02-26T12:01:00Z',
                 ],
                 (object) [
                     'state' => 'success',
@@ -136,9 +136,9 @@ class GithubStatusTest extends TestCase
                     'description' => 'Test 2 passed',
                     'target_url' => 'https://ci.example.com/2',
                     'created_at' => '2026-02-26T12:00:00Z',
-                    'updated_at' => '2026-02-26T12:02:00Z'
-                ]
-            ]
+                    'updated_at' => '2026-02-26T12:02:00Z',
+                ],
+            ],
         ];
 
         $combined = GithubCombinedStatus::fromApiResponse($data);

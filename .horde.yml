@@ -36,3 +36,7 @@ dependencies:
       phpstan/phpstan: ^2
 nocommands:
   - bin/demo-client.php
+
+quality:
+  phpstan:
+    level: 5

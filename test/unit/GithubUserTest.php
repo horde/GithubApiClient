@@ -61,7 +61,7 @@ class GithubUserTest extends TestCase
             'id' => 99999,
             'avatar_url' => 'https://avatar.example.com/apiuser.png',
             'html_url' => 'https://github.com/apiuser',
-            'type' => 'Bot'
+            'type' => 'Bot',
         ];
 
         $user = GithubUser::fromApiResponse($data);
@@ -90,7 +90,7 @@ class GithubUserTest extends TestCase
     {
         $data = (object) [
             'login' => 'partial',
-            'id' => 54321
+            'id' => 54321,
         ];
 
         $user = GithubUser::fromApiResponse($data);

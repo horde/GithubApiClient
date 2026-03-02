@@ -70,7 +70,7 @@ class GithubRepositoryTest extends TestCase
             'name' => 'components',
             'full_name' => 'horde/components',
             'description' => 'Component management tool',
-            'clone_url' => 'https://github.com/horde/components.git'
+            'clone_url' => 'https://github.com/horde/components.git',
         ];
 
         $repo = GithubRepository::fromApiArray($data);

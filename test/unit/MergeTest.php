@@ -62,7 +62,7 @@ class MergeTest extends TestCase
             'commit_title' => 'Test title',
             'commit_message' => 'Test message',
             'merge_method' => 'squash',
-            'sha' => 'abc123'
+            'sha' => 'abc123',
         ], $array);
     }
 
@@ -133,7 +133,7 @@ class MergeTest extends TestCase
         $data = (object) [
             'sha' => 'ghi789jkl012',
             'merged' => true,
-            'message' => 'Pull Request successfully merged'
+            'message' => 'Pull Request successfully merged',
         ];
 
         $result = MergeResult::fromApiResponse($data);
@@ -148,7 +148,7 @@ class MergeTest extends TestCase
         $data = (object) [
             'sha' => '',
             'merged' => false,
-            'message' => 'Merge conflict'
+            'message' => 'Merge conflict',
         ];
 
         $result = MergeResult::fromApiResponse($data);

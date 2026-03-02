@@ -57,7 +57,7 @@ class GithubApiClientAppAuthTest extends TestCase
             'token' => 'ghs_16C7e42F292c6912E7710c838347Ae178B4a',
             'expires_at' => '2026-03-02T13:00:00Z',
             'permissions' => ['contents' => 'read', 'metadata' => 'read'],
-            'repository_selection' => 'all'
+            'repository_selection' => 'all',
         ]);
 
         $stream->method('__toString')->willReturn($responseBody);
@@ -95,7 +95,7 @@ class GithubApiClientAppAuthTest extends TestCase
             'token' => 'ghs_specific_repos',
             'expires_at' => '2026-03-02T14:00:00Z',
             'permissions' => ['contents' => 'write', 'issues' => 'write'],
-            'repository_selection' => 'selected'
+            'repository_selection' => 'selected',
         ]);
 
         $stream->method('__toString')->willReturn($responseBody);
@@ -247,15 +247,15 @@ class GithubApiClientAppAuthTest extends TestCase
                 'account' => ['login' => 'org1', 'id' => 1, 'avatar_url' => '', 'html_url' => '', 'type' => 'Organization'],
                 'repository_selection' => 'all',
                 'created_at' => '2026-01-01T00:00:00Z',
-                'updated_at' => '2026-01-01T00:00:00Z'
+                'updated_at' => '2026-01-01T00:00:00Z',
             ],
             [
                 'id' => 222,
                 'account' => ['login' => 'org2', 'id' => 2, 'avatar_url' => '', 'html_url' => '', 'type' => 'Organization'],
                 'repository_selection' => 'selected',
                 'created_at' => '2026-01-02T00:00:00Z',
-                'updated_at' => '2026-01-02T00:00:00Z'
-            ]
+                'updated_at' => '2026-01-02T00:00:00Z',
+            ],
         ]);
 
         $stream->method('__toString')->willReturn($responseBody);
@@ -321,7 +321,7 @@ class GithubApiClientAppAuthTest extends TestCase
                 'account' => ['login' => "org{$i}", 'id' => $i, 'avatar_url' => '', 'html_url' => '', 'type' => 'Organization'],
                 'repository_selection' => 'all',
                 'created_at' => '2026-01-01T00:00:00Z',
-                'updated_at' => '2026-01-01T00:00:00Z'
+                'updated_at' => '2026-01-01T00:00:00Z',
             ];
         }
 
@@ -387,10 +387,10 @@ class GithubApiClientAppAuthTest extends TestCase
                 'id' => 789,
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/789',
                 'html_url' => 'https://github.com/app-owner',
-                'type' => 'User'
+                'type' => 'User',
             ],
             'created_at' => '2025-01-01T00:00:00Z',
-            'updated_at' => '2026-03-01T00:00:00Z'
+            'updated_at' => '2026-03-01T00:00:00Z',
         ]);
 
         $stream->method('__toString')->willReturn($responseBody);

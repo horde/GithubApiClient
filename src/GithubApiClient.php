@@ -855,8 +855,7 @@ class GithubApiClient
     public function createInstallationAccessToken(
         int $installationId,
         CreateInstallationAccessTokenParams $params = new CreateInstallationAccessTokenParams()
-    ): InstallationAccessToken
-    {
+    ): InstallationAccessToken {
         if ($this->streamFactory === null) {
             throw new Exception('StreamFactory is required for createInstallationAccessToken');
         }

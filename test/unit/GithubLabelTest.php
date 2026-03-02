@@ -53,7 +53,7 @@ class GithubLabelTest extends TestCase
         $data = (object) [
             'name' => 'documentation',
             'color' => '0075ca',
-            'description' => 'Improvements or additions to documentation'
+            'description' => 'Improvements or additions to documentation',
         ];
 
         $label = GithubLabel::fromApiResponse($data);
@@ -67,7 +67,7 @@ class GithubLabelTest extends TestCase
     {
         $data = (object) [
             'name' => 'wontfix',
-            'color' => 'ffffff'
+            'color' => 'ffffff',
         ];
 
         $label = GithubLabel::fromApiResponse($data);

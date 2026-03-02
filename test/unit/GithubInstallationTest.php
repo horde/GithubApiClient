@@ -56,11 +56,11 @@ class GithubInstallationTest extends TestCase
                 'id' => 999,
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/999',
                 'html_url' => 'https://github.com/my-org',
-                'type' => 'Organization'
+                'type' => 'Organization',
             ],
             'repository_selection' => 'selected',
             'created_at' => '2025-06-15T08:30:00Z',
-            'updated_at' => '2026-02-20T14:45:00Z'
+            'updated_at' => '2026-02-20T14:45:00Z',
         ]));
 
         $installation = GithubInstallation::fromApiResponse($data);
@@ -77,7 +77,7 @@ class GithubInstallationTest extends TestCase
     public function testFromApiResponseWithMinimalData(): void
     {
         $data = json_decode(json_encode([
-            'id' => 111
+            'id' => 111,
         ]));
 
         $installation = GithubInstallation::fromApiResponse($data);
@@ -114,11 +114,11 @@ class GithubInstallationTest extends TestCase
                 'id' => 777,
                 'avatar_url' => 'https://avatars.githubusercontent.com/u/777',
                 'html_url' => 'https://github.com/bot-account',
-                'type' => 'Bot'
+                'type' => 'Bot',
             ],
             'repository_selection' => 'all',
             'created_at' => '2026-01-01T00:00:00Z',
-            'updated_at' => '2026-02-01T00:00:00Z'
+            'updated_at' => '2026-02-01T00:00:00Z',
         ]));
 
         $installation = GithubInstallation::fromApiResponse($data);
