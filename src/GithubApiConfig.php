@@ -13,6 +13,8 @@ class GithubApiConfig
         public readonly string $endpoint = 'https://api.github.com',
         // Default to no access token
         public readonly string $accessToken = '',
-        public readonly string $apiVersion = '2022-11-28'
+        public readonly string $apiVersion = '2022-11-28',
+        // Default to no JWT (for GitHub App authentication)
+        public readonly string $jwt = ''
     ) {}
 }
