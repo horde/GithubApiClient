@@ -1,4 +1,15 @@
 ---
+0.0.1-alpha5:
+  api: 0.0.1-alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-04
+  license:
+    identifier: LGPL-2.1-only
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: |
+    fix(deps): lower PHP requirement from 8.3 to 8.2
 0.0.1-alpha4:
   api: 0.0.1-alpha1
   state:
