@@ -23,7 +23,7 @@ license:
   uri: http://www.horde.org/licenses/lgpl21
 dependencies:
   required:
-    php: ^8.3
+    php: ^8.2
     composer:
       horde/http: '*'
       psr/http-client: ^1.0
@@ -31,7 +31,7 @@ dependencies:
       psr/http-message: ^2.0
   dev:
     composer:
-      phpunit/phpunit: ^12
+      phpunit/phpunit: ^11 || ^12
       friendsofphp/php-cs-fixer: ^3
       phpstan/phpstan: ^2
 nocommands:
