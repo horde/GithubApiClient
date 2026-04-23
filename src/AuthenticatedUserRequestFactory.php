@@ -26,9 +26,12 @@ class AuthenticatedUserRequestFactory
     {
         $uri = sprintf('%s/user', $this->config->endpoint);
 
-        return $this->requestFactory->createRequest('GET', $uri)
+        $request = $this->requestFactory->createRequest('GET', $uri)
             ->withHeader('Accept', 'application/vnd.github+json')
-            ->withHeader('Authorization', 'Bearer ' . $this->config->accessToken)
             ->withHeader('X-GitHub-Api-Version', $this->config->apiVersion);
+        if ($this->config->accessToken !== '') {
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->accessToken);
+        }
+        return $request;
     }
 }

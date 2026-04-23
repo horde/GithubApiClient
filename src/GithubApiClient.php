@@ -22,6 +22,24 @@ class GithubApiClient
         private readonly ?StreamFactoryInterface $streamFactory = null
     ) {}
 
+    public static function withAuthenticatedClient(
+        ClientInterface $httpClient,
+        RequestFactoryInterface $requestFactory,
+        ?StreamFactoryInterface $streamFactory = null,
+        string $endpoint = 'https://api.github.com',
+        string $apiVersion = '2022-11-28',
+    ): self {
+        return new self(
+            $httpClient,
+            $requestFactory,
+            new GithubApiConfig(
+                endpoint: $endpoint,
+                apiVersion: $apiVersion,
+            ),
+            $streamFactory,
+        );
+    }
+
     public function listRepositoriesInOrganization(GithubOrganizationId $org): GithubRepositoryList
     {
         $requestFactory = new ListRepositoriesInOrganizationRequestFactory($this->requestFactory, $this->config, $org);

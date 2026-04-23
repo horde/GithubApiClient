@@ -36,7 +36,9 @@ class ListInstallationsRequestFactory
         $url = sprintf('%s/app/installations', $this->config->endpoint);
 
         $request = $this->requestFactory->createRequest('GET', $url);
-        $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->jwt);
+        if ($this->config->jwt !== '') {
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->jwt);
+        }
         $request = $request->withHeader('Accept', 'application/vnd.github+json');
         $request = $request->withHeader('X-GitHub-Api-Version', $this->config->apiVersion);
 

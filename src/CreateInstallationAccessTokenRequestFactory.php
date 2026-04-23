@@ -47,7 +47,9 @@ class CreateInstallationAccessTokenRequestFactory
         $stream = $this->streamFactory->createStream($jsonBody);
 
         $request = $this->requestFactory->createRequest('POST', $url);
-        $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->jwt);
+        if ($this->config->jwt !== '') {
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->jwt);
+        }
         $request = $request->withHeader('Accept', 'application/vnd.github+json');
         $request = $request->withHeader('X-GitHub-Api-Version', $this->config->apiVersion);
         $request = $request->withHeader('Content-Type', 'application/json');

@@ -46,7 +46,9 @@ class UploadReleaseAssetRequestFactory
         $url .= '?name=' . rawurlencode($this->filename);
 
         $request = $this->requestFactory->createRequest('POST', $url);
-        $request = $request->withHeader('Authorization', 'token ' . $this->config->accessToken);
+        if ($this->config->accessToken !== '') {
+            $request = $request->withHeader('Authorization', 'token ' . $this->config->accessToken);
+        }
         $request = $request->withHeader('Accept', 'application/vnd.github.v3+json');
         $request = $request->withHeader('Content-Type', $this->contentType);
         $request = $request->withBody($this->content);

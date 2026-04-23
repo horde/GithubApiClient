@@ -65,10 +65,11 @@ class ListPullRequestsRequestFactory
         }
         // TODO: URI Helper might be more elegant here
         $request = $this->requestFactory->createRequest('GET', $uri)
-        ->withHeader('Accept', 'application/vnd.github+json')
-        ->withHeader('Authorization', 'Bearer ' . $this->config->accessToken)
-        // TODO: Extract this
-        ->withHeader('X-GitHub-Api-Version', '2022-11-28');
+            ->withHeader('Accept', 'application/vnd.github+json')
+            ->withHeader('X-GitHub-Api-Version', '2022-11-28');
+        if ($this->config->accessToken !== '') {
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->config->accessToken);
+        }
         return $request;
     }
 }

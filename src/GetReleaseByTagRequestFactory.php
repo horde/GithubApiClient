@@ -43,7 +43,9 @@ class GetReleaseByTagRequestFactory
         );
 
         $request = $this->requestFactory->createRequest('GET', $url);
-        $request = $request->withHeader('Authorization', 'token ' . $this->config->accessToken);
+        if ($this->config->accessToken !== '') {
+            $request = $request->withHeader('Authorization', 'token ' . $this->config->accessToken);
+        }
         $request = $request->withHeader('Accept', 'application/vnd.github.v3+json');
 
         return $request;
