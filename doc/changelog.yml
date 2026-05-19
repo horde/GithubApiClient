@@ -67,3 +67,16 @@
     feat: Add rate limit and token permissions checking support
     feat(ci): Add simple on-pr pipeline
     ci: Stub of phpunit12 compatible test framework
+0.0.1-RC1:
+  api: 0.0.1-RC1
+  state:
+    release: RC
+    api: RC
+  date: 2026-05-19
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    feat: Add nodeId to various DTOs
+    feat: horde/GithubApiClient#11 alternative client which delegates authorization to decorator
+    feat: horde/Core#91 Extract reusable authentication handling for Github from components to github api client.

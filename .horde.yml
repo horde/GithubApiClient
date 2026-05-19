@@ -13,10 +13,10 @@ authors:
     active: true
     role: contributor
 version:
-  release: 0.0.1-alpha5
+  release: 0.0.1-RC1
   api: 0.0.1alpha1
 state:
-  release: alpha
+  release: RC
   api: alpha
 license:
   identifier: LGPL-2.1-only
