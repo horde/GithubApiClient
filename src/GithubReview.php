@@ -27,7 +27,8 @@ class GithubReview implements Stringable
         public readonly string $state,
         public readonly string $htmlUrl,
         public readonly string $submittedAt,
-        public readonly string $commitId
+        public readonly string $commitId,
+        public readonly string $nodeId = '',
     ) {}
 
     public function __toString(): string
@@ -52,7 +53,8 @@ class GithubReview implements Stringable
             state: $data->state ?? '',
             htmlUrl: $data->html_url ?? '',
             submittedAt: $data->submitted_at ?? '',
-            commitId: $data->commit_id ?? ''
+            commitId: $data->commit_id ?? '',
+            nodeId: $data->node_id ?? '',
         );
     }
 }

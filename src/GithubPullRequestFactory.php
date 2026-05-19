@@ -69,6 +69,7 @@ class GithubPullRequestFactory
             requestedReviewers: $requestedReviewers,
             mergeableState: $apiResponse->mergeable_state ?? null,
             mergeable: $apiResponse->mergeable ?? null,
+            nodeId: $apiResponse->node_id ?? '',
         );
     }
 }

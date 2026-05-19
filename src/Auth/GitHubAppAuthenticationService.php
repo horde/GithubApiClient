@@ -81,6 +81,18 @@ class GitHubAppAuthenticationService
         $this->tokenExpiresAt = null;
     }
 
+    /**
+     * Return a short-lived installation access token string.
+     *
+     * Useful when callers need raw HTTP access to the GitHub API
+     * without going through GithubApiClient (e.g. fetching file
+     * contents via the Contents API).
+     */
+    public function getInstallationToken(): string
+    {
+        return $this->getInstallationAccessToken()->token;
+    }
+
     public function hasValidCachedToken(): bool
     {
         if ($this->cachedToken === null || $this->tokenExpiresAt === null) {

@@ -25,7 +25,8 @@ class GithubUser implements Stringable
         public readonly int $id,
         public readonly string $avatarUrl,
         public readonly string $htmlUrl,
-        public readonly string $type = 'User'
+        public readonly string $type = 'User',
+        public readonly string $nodeId = '',
     ) {}
 
     public function __toString(): string
@@ -46,7 +47,8 @@ class GithubUser implements Stringable
             id: $data->id ?? 0,
             avatarUrl: $data->avatar_url ?? '',
             htmlUrl: $data->html_url ?? '',
-            type: $data->type ?? 'User'
+            type: $data->type ?? 'User',
+            nodeId: $data->node_id ?? '',
         );
     }
 }

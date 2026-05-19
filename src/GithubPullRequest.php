@@ -70,6 +70,7 @@ class GithubPullRequest implements Stringable
         public readonly array $requestedReviewers,
         public readonly ?string $mergeableState,
         public readonly ?bool $mergeable,
+        public readonly string $nodeId = '',
     ) {}
 
     public function __toString(): string

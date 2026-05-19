@@ -47,6 +47,7 @@ class GithubRelease implements Stringable
         public readonly string $uploadUrl,
         public readonly GithubUser $author,
         public readonly array $assets,
+        public readonly string $nodeId = '',
     ) {}
 
     public function __toString(): string
@@ -84,6 +85,7 @@ class GithubRelease implements Stringable
             uploadUrl: $data->upload_url ?? '',
             author: $author,
             assets: $assets,
+            nodeId: $data->node_id ?? '',
         );
     }
 }

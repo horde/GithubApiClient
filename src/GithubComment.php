@@ -27,7 +27,8 @@ class GithubComment implements Stringable
         public readonly string $createdAt,
         public readonly string $updatedAt,
         public readonly string $htmlUrl,
-        public readonly string $apiUrl
+        public readonly string $apiUrl,
+        public readonly string $nodeId = '',
     ) {}
 
     public function __toString(): string
@@ -52,7 +53,8 @@ class GithubComment implements Stringable
             createdAt: $data->created_at ?? '',
             updatedAt: $data->updated_at ?? '',
             htmlUrl: $data->html_url ?? '',
-            apiUrl: $data->url ?? ''
+            apiUrl: $data->url ?? '',
+            nodeId: $data->node_id ?? '',
         );
     }
 }

@@ -17,7 +17,8 @@ class GithubRepository
         string $name,
         private readonly string $fullName,
         private readonly string $description,
-        private readonly string $cloneUrl
+        private readonly string $cloneUrl,
+        public readonly string $nodeId = '',
     ) {
         $this->name = $name;
         // Extract owner from fullName
@@ -54,6 +55,7 @@ class GithubRepository
                 fullName: (string) $apiArray['full_name'],
                 description: (string) ($apiArray['description'] ?? ''),
                 cloneUrl: (string) $apiArray['clone_url'],
+                nodeId: (string) ($apiArray['node_id'] ?? ''),
             );
         }
         throw new InvalidArgumentException();
