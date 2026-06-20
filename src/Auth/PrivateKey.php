@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Horde\GithubApiClient\Auth;
 
 use InvalidArgumentException;
+use OpenSSLAsymmetricKey;
 
 class PrivateKey
 {
@@ -57,9 +58,9 @@ class PrivateKey
     }
 
     /**
-     * @return \OpenSSLAsymmetricKey
+     * @return OpenSSLAsymmetricKey
      */
-    public function getResource(): \OpenSSLAsymmetricKey
+    public function getResource(): OpenSSLAsymmetricKey
     {
         $resource = openssl_pkey_get_private($this->content);
         if ($resource === false) {

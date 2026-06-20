@@ -850,6 +850,35 @@ class GithubApiClient
     }
 
     /**
+     * Remove all labels from an issue or pull request
+     *
+     * Symmetric with removeLabel(...) but clears every label assignment at once.
+     * Useful for CI flows that reset state ("clear all lane-outcome labels,
+     * then add the new ones").
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue or pull request number
+     * @return void
+     * @throws Exception
+     */
+    public function removeAllLabels(GithubRepository $repo, int $number): void
+    {
+        $requestFactory = new RemoveAllLabelsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
      * List repository-level label definitions
      *
      * Distinct from listIssueLabels (which lists assignments on one issue/PR);
@@ -1463,7 +1492,7 @@ class GithubApiClient
             }
 
             return $baseMessage;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // If anything goes wrong parsing, return base message
             return $baseMessage;
         }

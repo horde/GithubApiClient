@@ -19,6 +19,7 @@ use Horde\Http\RequestFactory;
 use Horde\Http\ResponseFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Exception;
 
 // Check for GitHub token
 $strGithubApiToken = (string) getenv('GITHUB_TOKEN');
@@ -60,7 +61,7 @@ try {
     }
 
     echo "\n";
-} catch (\Exception $e) {
+} catch (Exception $e) {
     echo "  └─ ✗ Error: " . $e->getMessage() . "\n\n";
 }
 
@@ -89,7 +90,7 @@ try {
     }
 
     echo "\n";
-} catch (\Exception $e) {
+} catch (Exception $e) {
     echo "  └─ ✗ Error: " . $e->getMessage() . "\n\n";
 }
 
