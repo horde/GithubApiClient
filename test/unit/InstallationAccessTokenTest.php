@@ -7,6 +7,7 @@ namespace Horde\GithubApiClient;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -130,7 +131,7 @@ class InstallationAccessTokenTest extends TestCase
         );
 
         // Verify token doesn't implement Stringable (for security)
-        $reflection = new \ReflectionClass($token);
+        $reflection = new ReflectionClass($token);
         $interfaces = $reflection->getInterfaceNames();
 
         $this->assertNotContains('Stringable', $interfaces);

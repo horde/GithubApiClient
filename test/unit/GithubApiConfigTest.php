@@ -8,6 +8,7 @@ use Horde\GithubApiClient\GithubApiConfig;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use ReflectionClass;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -85,7 +86,7 @@ class GithubApiConfigTest extends TestCase
     {
         $config = new GithubApiConfig();
 
-        $reflection = new \ReflectionClass($config);
+        $reflection = new ReflectionClass($config);
         $properties = $reflection->getProperties();
 
         foreach ($properties as $property) {

@@ -17,6 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Exception;
 
 #[CoversClass(GithubApiClient::class)]
 #[AllowMockObjectsWithoutExpectations]
@@ -57,7 +58,7 @@ class GithubApiClientErrorHandlingTest extends TestCase
             base: 'main'
         );
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('422 Unprocessable Entity');
 
         $client->createPullRequest($repo, $params);
@@ -93,7 +94,7 @@ class GithubApiClientErrorHandlingTest extends TestCase
             base: 'main'
         );
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('404 Not Found');
 
         $client->createPullRequest($repo, $params);
@@ -129,7 +130,7 @@ class GithubApiClientErrorHandlingTest extends TestCase
             base: 'main'
         );
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('401 Unauthorized');
 
         $client->createPullRequest($repo, $params);
@@ -165,7 +166,7 @@ class GithubApiClientErrorHandlingTest extends TestCase
             base: 'main'
         );
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('403 Forbidden');
 
         $client->createPullRequest($repo, $params);
@@ -203,9 +204,9 @@ class GithubApiClientErrorHandlingTest extends TestCase
         $httpClient->method('sendRequest')->willReturn($response);
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config, $streamFactory);
-        $repo = \Horde\GithubApiClient\GithubRepository::fromFullName('horde/hordectl');
+        $repo = GithubRepository::fromFullName('horde/hordectl');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('422 Unprocessable Entity: Review Can not approve your own pull request');
 
         $params = new \Horde\GithubApiClient\CreateReviewParams(event: 'APPROVE', body: '');

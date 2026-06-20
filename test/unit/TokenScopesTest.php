@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Horde\GithubApiClient;
+namespace Horde\GithubApiClient\Test\Unit;
 
+use Horde\GithubApiClient\TokenScopes;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\Horde\GithubApiClient\TokenScopes::class)]
+#[CoversClass(TokenScopes::class)]
 final class TokenScopesTest extends TestCase
 {
     public function testConstructorFiltersDuplicatesAndNonStrings(): void

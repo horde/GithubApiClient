@@ -19,6 +19,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Exception;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -124,7 +125,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config, null);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('StreamFactory is required for createInstallationAccessToken');
 
         $client->createInstallationAccessToken(12345);
@@ -156,7 +157,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config, $streamFactory);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('401 Unauthorized');
 
         $client->createInstallationAccessToken(12345);
@@ -188,7 +189,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config, $streamFactory);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('403 Forbidden');
 
         $client->createInstallationAccessToken(12345);
@@ -220,7 +221,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config, $streamFactory);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('404 Not Found');
 
         $client->createInstallationAccessToken(99999);
@@ -357,7 +358,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('401 Unauthorized');
 
         $client->listInstallations();
@@ -429,7 +430,7 @@ class GithubApiClientAppAuthTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('401 Unauthorized');
 
         $client->getAuthenticatedApp();
