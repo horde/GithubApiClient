@@ -22,6 +22,7 @@ use Horde\Http\ResponseFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Exception;
 
 // Bootstrap the injector
 $strGithubApiToken = (string) getenv('GITHUB_TOKEN');
@@ -181,7 +182,7 @@ if (getenv('CREATE_PR_DEMO') === '1' && $demoRepo && strpos($demoRepo, '/') !== 
             echo "  ✓ Reopened PR #{$reopenedPr->number}, state: {$reopenedPr->state}\n";
         }
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "  ✗ Error: {$e->getMessage()}\n";
         echo "  Note: Make sure the head branch exists and differs from base branch\n";
     }

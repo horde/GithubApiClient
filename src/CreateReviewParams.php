@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Horde\GithubApiClient;
 
+use InvalidArgumentException;
+
 /**
  * Data transfer object for creating a GitHub pull request review
  *
@@ -29,13 +31,13 @@ class CreateReviewParams
         public readonly string $commitId = '',
     ) {
         if (!in_array($event, ['APPROVE', 'REQUEST_CHANGES', 'COMMENT'])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Invalid event: {$event}. Must be APPROVE, REQUEST_CHANGES, or COMMENT"
             );
         }
 
         if ($event === 'REQUEST_CHANGES' && $body === '') {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Body is required when event is REQUEST_CHANGES'
             );
         }

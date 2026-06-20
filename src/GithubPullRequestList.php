@@ -11,7 +11,7 @@ use Traversable;
 use OutOfBoundsException;
 use Stringable;
 
-/** @implements \IteratorAggregate<int, GithubRepository> */
+/** @implements IteratorAggregate<int, GithubRepository> */
 class GithubPullRequestList implements IteratorAggregate, Countable
 {
     /**

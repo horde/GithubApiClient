@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Horde\GithubApiClient;
 
+use DateTimeImmutable;
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * Represents GitHub API rate limit information
  */
@@ -24,7 +28,7 @@ class RateLimit
      */
     public static function fromApiResponse(object $response): self
     {
-        $core = $response->resources->core ?? throw new \InvalidArgumentException('Invalid rate limit response structure');
+        $core = $response->resources->core ?? throw new InvalidArgumentException('Invalid rate limit response structure');
 
         return new self(
             limit: $core->limit ?? 0,
@@ -70,11 +74,11 @@ class RateLimit
     /**
      * Get reset time as DateTime
      *
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    public function getResetDateTime(): \DateTimeImmutable
+    public function getResetDateTime(): DateTimeImmutable
     {
-        return \DateTimeImmutable::createFromFormat('U', (string) $this->reset)
-            ?: throw new \RuntimeException('Failed to create DateTime from reset timestamp');
+        return DateTimeImmutable::createFromFormat('U', (string) $this->reset)
+            ?: throw new RuntimeException('Failed to create DateTime from reset timestamp');
     }
 }
