@@ -476,6 +476,99 @@ class GithubApiClient
     }
 
     /**
+     * Create a Check Run on a commit
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreateCheckRunParams $params The check-run parameters
+     * @return GithubCheckRun The created check run
+     * @throws Exception
+     */
+    public function createCheckRun(GithubRepository $repo, CreateCheckRunParams $params): GithubCheckRun
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createCheckRun. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateCheckRunRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubCheckRun::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update an existing Check Run
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $checkRunId The check-run ID
+     * @param UpdateCheckRunParams $params The update parameters
+     * @return GithubCheckRun The updated check run
+     * @throws Exception
+     */
+    public function updateCheckRun(GithubRepository $repo, int $checkRunId, UpdateCheckRunParams $params): GithubCheckRun
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateCheckRun. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateCheckRunRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $checkRunId,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubCheckRun::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Get a single Check Run by ID
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $checkRunId The check-run ID
+     * @return GithubCheckRun
+     * @throws Exception
+     */
+    public function getCheckRun(GithubRepository $repo, int $checkRunId): GithubCheckRun
+    {
+        $requestFactory = new GetCheckRunRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $checkRunId
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubCheckRun::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
      * List labels on an issue or pull request
      *
      * @param GithubRepository $repo The repository
