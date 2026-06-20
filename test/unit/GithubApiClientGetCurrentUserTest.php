@@ -15,6 +15,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Exception;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -97,7 +98,7 @@ class GithubApiClientGetCurrentUserTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('401 Unauthorized: Bad credentials');
 
         $client->getCurrentUser();
@@ -130,7 +131,7 @@ class GithubApiClientGetCurrentUserTest extends TestCase
 
         $client = new GithubApiClient($httpClient, $requestFactory, $config);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('403 Forbidden: Resource not accessible by personal access token');
 
         $client->getCurrentUser();

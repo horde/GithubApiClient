@@ -21,6 +21,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use ReflectionProperty;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -65,7 +66,7 @@ final class PreAuthenticatedClientTest extends TestCase
             endpoint: 'https://github.example.com/api/v3',
         );
 
-        $reflection = new \ReflectionProperty(GithubApiClient::class, 'config');
+        $reflection = new ReflectionProperty(GithubApiClient::class, 'config');
         $config = $reflection->getValue($client);
 
         self::assertSame('https://github.example.com/api/v3', $config->endpoint);
@@ -275,19 +276,148 @@ final class PreAuthenticatedClientTest extends TestCase
                 return $this->headers[$name] ?? [];
             }
 
-            public function getHeaders(): array { return $this->headers; }
-            public function getProtocolVersion(): string { return '1.1'; }
-            public function withProtocolVersion(string $version): static { return $this; }
-            public function withAddedHeader(string $name, $value): static { return $this; }
-            public function withoutHeader(string $name): static { return $this; }
-            public function getBody(): StreamInterface { return new class implements StreamInterface { public function __toString(): string { return ''; } public function close(): void {} public function detach() { return null; } public function getSize(): ?int { return 0; } public function tell(): int { return 0; } public function eof(): bool { return true; } public function isSeekable(): bool { return false; } public function seek(int $offset, int $whence = SEEK_SET): void {} public function rewind(): void {} public function isWritable(): bool { return false; } public function write(string $string): int { return 0; } public function isReadable(): bool { return false; } public function read(int $length): string { return ''; } public function getContents(): string { return ''; } public function getMetadata(?string $key = null) { return null; } }; }
-            public function withBody(StreamInterface $body): static { return $this; }
-            public function getRequestTarget(): string { return '/'; }
-            public function withRequestTarget(string $requestTarget): static { return $this; }
-            public function getMethod(): string { return $this->method; }
-            public function withMethod(string $method): static { $c = clone $this; $c->method = $method; return $c; }
-            public function getUri(): \Psr\Http\Message\UriInterface { return new class implements \Psr\Http\Message\UriInterface { public function getScheme(): string { return ''; } public function getAuthority(): string { return ''; } public function getUserInfo(): string { return ''; } public function getHost(): string { return ''; } public function getPort(): ?int { return null; } public function getPath(): string { return ''; } public function getQuery(): string { return ''; } public function getFragment(): string { return ''; } public function withScheme(string $scheme): static { return $this; } public function withUserInfo(string $user, ?string $password = null): static { return $this; } public function withHost(string $host): static { return $this; } public function withPort(?int $port): static { return $this; } public function withPath(string $path): static { return $this; } public function withQuery(string $query): static { return $this; } public function withFragment(string $fragment): static { return $this; } public function __toString(): string { return ''; } }; }
-            public function withUri(\Psr\Http\Message\UriInterface $uri, bool $preserveHost = false): static { return $this; }
+            public function getHeaders(): array
+            {
+                return $this->headers;
+            }
+            public function getProtocolVersion(): string
+            {
+                return '1.1';
+            }
+            public function withProtocolVersion(string $version): static
+            {
+                return $this;
+            }
+            public function withAddedHeader(string $name, $value): static
+            {
+                return $this;
+            }
+            public function withoutHeader(string $name): static
+            {
+                return $this;
+            }
+            public function getBody(): StreamInterface
+            {
+                return new class implements StreamInterface {
+                    public function __toString(): string
+                    {
+                        return '';
+                    } public function close(): void {} public function detach()
+                    {
+                        return null;
+                    } public function getSize(): ?int
+                    {
+                        return 0;
+                    } public function tell(): int
+                    {
+                        return 0;
+                    } public function eof(): bool
+                    {
+                        return true;
+                    } public function isSeekable(): bool
+                    {
+                        return false;
+                    } public function seek(int $offset, int $whence = SEEK_SET): void {} public function rewind(): void {} public function isWritable(): bool
+                    {
+                        return false;
+                    } public function write(string $string): int
+                    {
+                        return 0;
+                    } public function isReadable(): bool
+                    {
+                        return false;
+                    } public function read(int $length): string
+                    {
+                        return '';
+                    } public function getContents(): string
+                    {
+                        return '';
+                    } public function getMetadata(?string $key = null)
+                    {
+                        return null;
+                    }
+                };
+            }
+            public function withBody(StreamInterface $body): static
+            {
+                return $this;
+            }
+            public function getRequestTarget(): string
+            {
+                return '/';
+            }
+            public function withRequestTarget(string $requestTarget): static
+            {
+                return $this;
+            }
+            public function getMethod(): string
+            {
+                return $this->method;
+            }
+            public function withMethod(string $method): static
+            {
+                $c = clone $this;
+                $c->method = $method;
+                return $c;
+            }
+            public function getUri(): \Psr\Http\Message\UriInterface
+            {
+                return new class implements \Psr\Http\Message\UriInterface {
+                    public function getScheme(): string
+                    {
+                        return '';
+                    } public function getAuthority(): string
+                    {
+                        return '';
+                    } public function getUserInfo(): string
+                    {
+                        return '';
+                    } public function getHost(): string
+                    {
+                        return '';
+                    } public function getPort(): ?int
+                    {
+                        return null;
+                    } public function getPath(): string
+                    {
+                        return '';
+                    } public function getQuery(): string
+                    {
+                        return '';
+                    } public function getFragment(): string
+                    {
+                        return '';
+                    } public function withScheme(string $scheme): static
+                    {
+                        return $this;
+                    } public function withUserInfo(string $user, ?string $password = null): static
+                    {
+                        return $this;
+                    } public function withHost(string $host): static
+                    {
+                        return $this;
+                    } public function withPort(?int $port): static
+                    {
+                        return $this;
+                    } public function withPath(string $path): static
+                    {
+                        return $this;
+                    } public function withQuery(string $query): static
+                    {
+                        return $this;
+                    } public function withFragment(string $fragment): static
+                    {
+                        return $this;
+                    } public function __toString(): string
+                    {
+                        return '';
+                    }
+                };
+            }
+            public function withUri(\Psr\Http\Message\UriInterface $uri, bool $preserveHost = false): static
+            {
+                return $this;
+            }
         };
     }
 }

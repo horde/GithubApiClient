@@ -8,6 +8,8 @@ use Horde\GithubApiClient\GithubRepository;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use InvalidArgumentException;
+use ReflectionProperty;
 
 #[CoversClass(GithubRepository::class)]
 #[AllowMockObjectsWithoutExpectations]
@@ -42,7 +44,7 @@ class GithubRepositoryTest extends TestCase
 
     public function testFromFullNameThrowsOnEmptyString(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Full name cannot be empty');
 
         GithubRepository::fromFullName('');
@@ -50,7 +52,7 @@ class GithubRepositoryTest extends TestCase
 
     public function testFromFullNameThrowsOnInvalidFormat(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid full name format');
 
         GithubRepository::fromFullName('invalid-no-slash');
@@ -58,7 +60,7 @@ class GithubRepositoryTest extends TestCase
 
     public function testFromFullNameThrowsOnTooManySlashes(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid full name format');
 
         GithubRepository::fromFullName('owner/repo/extra');
@@ -112,10 +114,10 @@ class GithubRepositoryTest extends TestCase
         $repo = GithubRepository::fromFullName('github/gitignore');
 
         // Verify properties are readonly (this will be caught by PHP at runtime)
-        $reflection = new \ReflectionProperty(GithubRepository::class, 'owner');
+        $reflection = new ReflectionProperty(GithubRepository::class, 'owner');
         $this->assertTrue($reflection->isReadOnly());
 
-        $reflection = new \ReflectionProperty(GithubRepository::class, 'name');
+        $reflection = new ReflectionProperty(GithubRepository::class, 'name');
         $this->assertTrue($reflection->isReadOnly());
     }
 }

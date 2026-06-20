@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Horde\GithubApiClient;
+namespace Horde\GithubApiClient\Test\Unit;
 
+use Horde\GithubApiClient\RateLimit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
+use DateTimeImmutable;
 
-#[\PHPUnit\Framework\Attributes\CoversClass(\Horde\GithubApiClient\RateLimit::class)]
+#[CoversClass(RateLimit::class)]
 final class RateLimitTest extends TestCase
 {
     public function testConstructorSetsProperties(): void
@@ -148,7 +151,7 @@ final class RateLimitTest extends TestCase
 
         $dateTime = $rateLimit->getResetDateTime();
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $dateTime);
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('1609459200', $dateTime->format('U'));
     }
 }

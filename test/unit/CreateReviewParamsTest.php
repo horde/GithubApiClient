@@ -7,6 +7,7 @@ namespace Horde\GithubApiClient;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
 
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
@@ -83,7 +84,7 @@ class CreateReviewParamsTest extends TestCase
 
     public function testInvalidEventThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid event: INVALID');
 
         new CreateReviewParams(
@@ -93,7 +94,7 @@ class CreateReviewParamsTest extends TestCase
 
     public function testRequestChangesWithoutBodyThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Body is required when event is REQUEST_CHANGES');
 
         new CreateReviewParams(
