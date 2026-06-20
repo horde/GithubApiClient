@@ -422,6 +422,140 @@ class GithubApiClient
     }
 
     /**
+     * Create a per-line review comment on a pull request
+     *
+     * Distinct from createPullRequestComment, which posts to the conversation
+     * thread. Review comments anchor to a specific file path and diff line.
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $prNumber The pull request number
+     * @param CreateReviewCommentParams $params The review-comment parameters
+     * @return GithubReviewComment The created review comment
+     * @throws Exception
+     */
+    public function createReviewComment(GithubRepository $repo, int $prNumber, CreateReviewCommentParams $params): GithubReviewComment
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createReviewComment. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateReviewCommentRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $prNumber,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubReviewComment::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * List per-line review comments on a pull request
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $prNumber The pull request number
+     * @return GithubReviewCommentList
+     * @throws Exception
+     */
+    public function listReviewComments(GithubRepository $repo, int $prNumber): GithubReviewCommentList
+    {
+        $requestFactory = new ListReviewCommentsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $prNumber
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $factory = new GithubReviewCommentFactory();
+            $comments = [];
+            foreach ($data as $item) {
+                $comments[] = $factory->createFromApiResponse($item);
+            }
+            return new GithubReviewCommentList($comments);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update a per-line review comment
+     *
+     * Note: addressed by comment id only (no PR number in the URL).
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $commentId The review-comment ID
+     * @param string $body The new comment body
+     * @return GithubReviewComment The updated review comment
+     * @throws Exception
+     */
+    public function updateReviewComment(GithubRepository $repo, int $commentId, string $body): GithubReviewComment
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateReviewComment. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateReviewCommentRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $commentId,
+            $body
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubReviewComment::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Delete a per-line review comment
+     *
+     * Note: addressed by comment id only (no PR number in the URL).
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $commentId The review-comment ID
+     * @return void
+     * @throws Exception
+     */
+    public function deleteReviewComment(GithubRepository $repo, int $commentId): void
+    {
+        $requestFactory = new DeleteReviewCommentRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $commentId
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
      * Get combined status for a commit
      *
      * @param GithubRepository $repo The repository
