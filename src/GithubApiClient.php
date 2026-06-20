@@ -850,6 +850,169 @@ class GithubApiClient
     }
 
     /**
+     * List repository-level label definitions
+     *
+     * Distinct from listIssueLabels (which lists assignments on one issue/PR);
+     * this lists the labels that exist in the repository.
+     *
+     * @param GithubRepository $repo The repository
+     * @return GithubLabelList
+     * @throws Exception
+     */
+    public function listRepositoryLabels(GithubRepository $repo): GithubLabelList
+    {
+        $requestFactory = new ListRepositoryLabelsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo
+        );
+        $request = $requestFactory->create();
+        $labels = [];
+        $labelFactory = new GithubLabelFactory();
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode((string) $response->getBody());
+                foreach ($data as $labelData) {
+                    $labels[] = $labelFactory->createFromApiResponse($labelData);
+                }
+                $pagination = new GithubApiPagination($request, $response);
+                if (!$pagination->hasNextLink()) {
+                    break;
+                }
+                $request = $pagination->nextRequest();
+            } else {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+        }
+
+        return new GithubLabelList($labels);
+    }
+
+    /**
+     * Get a single repository-level label by name
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $name The label name
+     * @return GithubLabel
+     * @throws Exception
+     */
+    public function getLabel(GithubRepository $repo, string $name): GithubLabel
+    {
+        $requestFactory = new GetLabelRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $name
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubLabel::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Create a repository-level label definition
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreateLabelParams $params The label parameters
+     * @return GithubLabel The created label
+     * @throws Exception
+     */
+    public function createLabel(GithubRepository $repo, CreateLabelParams $params): GithubLabel
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createLabel. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateLabelRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubLabel::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update a repository-level label definition
+     *
+     * The currentName URL segment is the lookup key; a non-null name in
+     * UpdateLabelParams renames the label.
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $currentName The current label name (URL key)
+     * @param UpdateLabelParams $params The update parameters
+     * @return GithubLabel The updated label
+     * @throws Exception
+     */
+    public function updateLabel(GithubRepository $repo, string $currentName, UpdateLabelParams $params): GithubLabel
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateLabel. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateLabelRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $currentName,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubLabel::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Delete a repository-level label definition
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $name The label name
+     * @return void
+     * @throws Exception
+     */
+    public function deleteLabel(GithubRepository $repo, string $name): void
+    {
+        $requestFactory = new DeleteLabelRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $name
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
      * Merge a pull request
      *
      * @param GithubRepository $repo The repository
