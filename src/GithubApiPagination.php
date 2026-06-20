@@ -19,6 +19,10 @@ class GithubApiPagination
     {
         // Github separates links by comma-space rather than having a comma-separated list of link header values
         $headerLine = $this->response->getHeaderLine('Link');
+        if ($headerLine === '') {
+            // No Link header → no pagination relations. Single-page or non-paginated response.
+            return;
+        }
         $headers = explode(', ', $headerLine);
         foreach ($headers as $header) {
             [$origLink, $origRel] = explode('; ', $header);
