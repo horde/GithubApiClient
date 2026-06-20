@@ -182,6 +182,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -249,6 +250,7 @@ class GithubApiClient
             $commentFactory = new GithubCommentFactory();
             return $commentFactory->createFromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -284,6 +286,7 @@ class GithubApiClient
             $commentFactory = new GithubCommentFactory();
             return $commentFactory->createFromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -308,6 +311,7 @@ class GithubApiClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -377,6 +381,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -411,6 +416,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubReview::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -503,6 +509,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubCheckRun::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -537,6 +544,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubCheckRun::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -635,6 +643,7 @@ class GithubApiClient
             }
             return new GithubLabelList($labelsList);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -674,6 +683,7 @@ class GithubApiClient
             }
             return new GithubLabelList($labelsList);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -700,6 +710,7 @@ class GithubApiClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() !== 200) {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -734,6 +745,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return MergeResult::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -795,6 +807,7 @@ class GithubApiClient
             $prFactory = new GithubPullRequestFactory();
             return $prFactory->createFromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -827,6 +840,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubRelease::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -888,6 +902,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubRelease::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -925,6 +940,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return GithubReleaseAsset::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -985,6 +1001,7 @@ class GithubApiClient
             $data = json_decode((string) $response->getBody());
             return InstallationAccessToken::fromApiResponse($data);
         } else {
+            $this->maybeThrowAccessDenied($response);
             throw new Exception($this->parseErrorResponse($response));
         }
     }
@@ -1056,6 +1073,50 @@ class GithubApiClient
             }
         }
         return $repos;
+    }
+
+    /**
+     * Detect the "Resource not accessible by integration" 403 and throw a typed exception.
+     *
+     * GitHub returns this body when an Actions workflow's GITHUB_TOKEN is missing the
+     * required scope (e.g. `pull-requests: write` or `checks: write`). The typed
+     * exception lets consumers print a maintainer-actionable hint without parsing
+     * generic messages. Non-403 statuses and 403 statuses with other body shapes
+     * are passed through; the caller falls through to parseErrorResponse().
+     *
+     * @param ResponseInterface $response The HTTP response
+     * @return void
+     * @throws GithubApiAccessDeniedException
+     */
+    private function maybeThrowAccessDenied(ResponseInterface $response): void
+    {
+        if ($response->getStatusCode() !== 403) {
+            return;
+        }
+
+        $body = (string) $response->getBody();
+        if ($body === '') {
+            return;
+        }
+
+        $decoded = json_decode($body);
+        if (!is_object($decoded) || !isset($decoded->message) || !is_string($decoded->message)) {
+            return;
+        }
+
+        if (!str_contains($decoded->message, 'Resource not accessible by integration')) {
+            return;
+        }
+
+        $hint = 'The GitHub token does not have permission for this operation. '
+            . 'Ensure the token has the required scope (e.g. `pull-requests:write`, `checks:write`). '
+            . 'See https://docs.github.com/en/rest/authentication.';
+
+        throw new GithubApiAccessDeniedException(
+            statusCode: 403,
+            responseBody: $body,
+            hint: $hint
+        );
     }
 
     /**
