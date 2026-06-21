@@ -188,6 +188,188 @@ class GithubApiClient
     }
 
     /**
+     * List issues in a repository
+     *
+     * Returns both regular issues and pull requests (every PR is also an issue
+     * at the API level). Use `GithubIssue::$isPullRequest` to distinguish them.
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $state 'open' (default), 'closed', or 'all'
+     * @param string $labels Comma-separated label names to filter by; empty for no filter
+     * @param string $milestone Milestone number, '*' (any), or 'none'; empty for no filter
+     * @param string $assignee Assignee login, '*' (any), or 'none'; empty for no filter
+     * @return GithubIssueList
+     * @throws Exception
+     */
+    public function listIssues(
+        GithubRepository $repo,
+        string $state = 'open',
+        string $labels = '',
+        string $milestone = '',
+        string $assignee = ''
+    ): GithubIssueList {
+        $requestFactory = new ListIssuesRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $state,
+            $labels,
+            $milestone,
+            $assignee
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $issueFactory = new GithubIssueFactory();
+            $issues = [];
+            if (is_array($data)) {
+                foreach ($data as $issueData) {
+                    if (is_object($issueData)) {
+                        $issues[] = $issueFactory->createFromApiResponse($issueData);
+                    }
+                }
+            }
+            return new GithubIssueList($issues);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Get a single issue
+     *
+     * Works for both regular issues and pull requests — issues and PRs share
+     * a single counter per repo, so this returns whatever lives at #$number.
+     * Inspect `GithubIssue::$isPullRequest` to detect a PR.
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue (or PR) number
+     * @return GithubIssue
+     * @throws Exception
+     */
+    public function getIssue(GithubRepository $repo, int $number): GithubIssue
+    {
+        $requestFactory = new GetIssueRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $number
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $issueFactory = new GithubIssueFactory();
+            return $issueFactory->createFromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Create a new issue
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreateIssueParams $params The issue parameters
+     * @return GithubIssue The created issue
+     * @throws Exception
+     */
+    public function createIssue(GithubRepository $repo, CreateIssueParams $params): GithubIssue
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createIssue. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateIssueRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            $issueFactory = new GithubIssueFactory();
+            return $issueFactory->createFromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update an issue
+     *
+     * The IssueUpdate DTO distinguishes "leave alone" from "clear" — calling
+     * withMilestone(null) or withType(null) emits literal null in the request
+     * body, which is GitHub's signal to clear the current assignment.
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue (or PR) number
+     * @param IssueUpdate $update The update DTO
+     * @return GithubIssue The updated issue
+     * @throws Exception
+     */
+    public function updateIssue(GithubRepository $repo, int $number, IssueUpdate $update): GithubIssue
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateIssue. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateIssueRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $number,
+            $update
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $issueFactory = new GithubIssueFactory();
+            return $issueFactory->createFromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Close an issue (symmetric with closePullRequest)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue number
+     * @return GithubIssue The closed issue
+     * @throws Exception
+     */
+    public function closeIssue(GithubRepository $repo, int $number): GithubIssue
+    {
+        return $this->updateIssue($repo, $number, (new IssueUpdate())->withState('closed'));
+    }
+
+    /**
+     * Reopen a closed issue (symmetric with reopenPullRequest)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $number The issue number
+     * @return GithubIssue The reopened issue
+     * @throws Exception
+     */
+    public function reopenIssue(GithubRepository $repo, int $number): GithubIssue
+    {
+        return $this->updateIssue($repo, $number, (new IssueUpdate())->withState('open'));
+    }
+
+    /**
      * List all comments on a pull request
      *
      * @param GithubRepository $repo The repository
