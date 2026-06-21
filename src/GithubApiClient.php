@@ -552,6 +552,163 @@ class GithubApiClient
     }
 
     /**
+     * List organization-level issue types
+     *
+     * @param GithubOrganizationId $org The organization
+     * @return GithubIssueTypeList
+     * @throws Exception
+     */
+    public function listIssueTypes(GithubOrganizationId $org): GithubIssueTypeList
+    {
+        $requestFactory = new ListIssueTypesRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $org
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $types = [];
+            if (is_array($data)) {
+                foreach ($data as $entry) {
+                    if (is_object($entry)) {
+                        $types[] = GithubIssueType::fromApiResponse($entry);
+                    }
+                }
+            }
+            return new GithubIssueTypeList($types);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Create an organization-level issue type
+     *
+     * @param GithubOrganizationId $org The organization
+     * @param CreateIssueTypeParams $params The issue type parameters
+     * @return GithubIssueType The created issue type
+     * @throws Exception
+     */
+    public function createIssueType(GithubOrganizationId $org, CreateIssueTypeParams $params): GithubIssueType
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createIssueType. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateIssueTypeRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $org,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubIssueType::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update an organization-level issue type
+     *
+     * GitHub uses PUT for this endpoint (not PATCH).
+     *
+     * @param GithubOrganizationId $org The organization
+     * @param int $issueTypeId The numeric id of the issue type
+     * @param UpdateIssueTypeParams $params Update parameters
+     * @return GithubIssueType The updated issue type
+     * @throws Exception
+     */
+    public function updateIssueType(GithubOrganizationId $org, int $issueTypeId, UpdateIssueTypeParams $params): GithubIssueType
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateIssueType. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateIssueTypeRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $org,
+            $issueTypeId,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubIssueType::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Delete an organization-level issue type
+     *
+     * @param GithubOrganizationId $org The organization
+     * @param int $issueTypeId The numeric id of the issue type
+     * @return void
+     * @throws Exception
+     */
+    public function deleteIssueType(GithubOrganizationId $org, int $issueTypeId): void
+    {
+        $requestFactory = new DeleteIssueTypeRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $org,
+            $issueTypeId
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Assign an issue type to an issue (convenience wrapper for updateIssue)
+     *
+     * Type assignment is keyed by type name, not id, on the issue PATCH endpoint.
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $issueNumber The issue (or PR) number
+     * @param string $typeName The issue type name (e.g. "Bug")
+     * @return GithubIssue The updated issue
+     * @throws Exception
+     */
+    public function assignIssueType(GithubRepository $repo, int $issueNumber, string $typeName): GithubIssue
+    {
+        return $this->updateIssue($repo, $issueNumber, (new IssueUpdate())->withType($typeName));
+    }
+
+    /**
+     * Clear the issue type on an issue (convenience wrapper for updateIssue)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $issueNumber The issue (or PR) number
+     * @return GithubIssue The updated issue
+     * @throws Exception
+     */
+    public function unassignIssueType(GithubRepository $repo, int $issueNumber): GithubIssue
+    {
+        return $this->updateIssue($repo, $issueNumber, (new IssueUpdate())->withType(null));
+    }
+
+    /**
      * List all comments on a pull request
      *
      * @param GithubRepository $repo The repository
