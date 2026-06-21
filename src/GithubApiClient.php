@@ -370,6 +370,188 @@ class GithubApiClient
     }
 
     /**
+     * List milestones in a repository
+     *
+     * @param GithubRepository $repo The repository
+     * @param string $state 'open' (default), 'closed', or 'all'
+     * @return GithubMilestoneList
+     * @throws Exception
+     */
+    public function listMilestones(GithubRepository $repo, string $state = 'open'): GithubMilestoneList
+    {
+        $requestFactory = new ListMilestonesRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $state
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            $milestones = [];
+            if (is_array($data)) {
+                foreach ($data as $entry) {
+                    if (is_object($entry)) {
+                        $milestones[] = GithubMilestone::fromApiResponse($entry);
+                    }
+                }
+            }
+            return new GithubMilestoneList($milestones);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Get a single milestone
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $milestoneNumber The milestone number
+     * @return GithubMilestone
+     * @throws Exception
+     */
+    public function getMilestone(GithubRepository $repo, int $milestoneNumber): GithubMilestone
+    {
+        $requestFactory = new GetMilestoneRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $milestoneNumber
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubMilestone::fromApiResponse($data);
+        } else {
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Create a milestone
+     *
+     * @param GithubRepository $repo The repository
+     * @param CreateMilestoneParams $params Milestone parameters
+     * @return GithubMilestone The created milestone
+     * @throws Exception
+     */
+    public function createMilestone(GithubRepository $repo, CreateMilestoneParams $params): GithubMilestone
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for createMilestone. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new CreateMilestoneRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 201) {
+            $data = json_decode((string) $response->getBody());
+            return GithubMilestone::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Update a milestone
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $milestoneNumber The milestone number
+     * @param UpdateMilestoneParams $params Update parameters
+     * @return GithubMilestone The updated milestone
+     * @throws Exception
+     */
+    public function updateMilestone(GithubRepository $repo, int $milestoneNumber, UpdateMilestoneParams $params): GithubMilestone
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateMilestone. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateMilestoneRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $milestoneNumber,
+            $params
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode((string) $response->getBody());
+            return GithubMilestone::fromApiResponse($data);
+        } else {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Delete a milestone
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $milestoneNumber The milestone number
+     * @return void
+     * @throws Exception
+     */
+    public function deleteMilestone(GithubRepository $repo, int $milestoneNumber): void
+    {
+        $requestFactory = new DeleteMilestoneRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo,
+            $milestoneNumber
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() !== 204) {
+            $this->maybeThrowAccessDenied($response);
+            throw new Exception($this->parseErrorResponse($response));
+        }
+    }
+
+    /**
+     * Assign a milestone to an issue (convenience wrapper for updateIssue)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $issueNumber The issue (or PR) number
+     * @param int $milestoneNumber The milestone number to assign
+     * @return GithubIssue The updated issue
+     * @throws Exception
+     */
+    public function assignMilestone(GithubRepository $repo, int $issueNumber, int $milestoneNumber): GithubIssue
+    {
+        return $this->updateIssue($repo, $issueNumber, (new IssueUpdate())->withMilestone($milestoneNumber));
+    }
+
+    /**
+     * Clear the milestone on an issue (convenience wrapper for updateIssue)
+     *
+     * @param GithubRepository $repo The repository
+     * @param int $issueNumber The issue (or PR) number
+     * @return GithubIssue The updated issue
+     * @throws Exception
+     */
+    public function unassignMilestone(GithubRepository $repo, int $issueNumber): GithubIssue
+    {
+        return $this->updateIssue($repo, $issueNumber, (new IssueUpdate())->withMilestone(null));
+    }
+
+    /**
      * List all comments on a pull request
      *
      * @param GithubRepository $repo The repository
