@@ -1,4 +1,38 @@
 ---
+0.0.1:
+  api: 0.0.1
+  state:
+    release: stable
+    api: stable
+  date: 2026-06-24
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    feat(issuetype): add org issue-type CRUD with assign/unassign helpers
+    feat(milestone): add milestone CRUD with assign/unassign helpers
+    feat(issue): add issues base surface with type/milestone-aware IssueUpdate
+    test: merge tests/ into test/ and style FQCN usage
+    feat: removeAllLabels method
+    feat(label): add repository-level label CRUD
+    fix(pagination): handle empty Link header without TypeError
+    feat(reviewcomment): add per-line PR review-comment CRUD
+    feat(error): typed GithubApiAccessDeniedException on 403 missing-permission
+    feat(checkrun): add createCheckRun, updateCheckRun, getCheckRun
+    chore: Update workflow dependency
+0.0.1-RC1:
+  api: 0.0.1-RC1
+  state:
+    release: RC
+    api: RC
+  date: 2026-05-19
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    feat: Add nodeId to various DTOs
+    feat: horde/GithubApiClient#11 alternative client which delegates authorization to decorator
+    feat: horde/Core#91 Extract reusable authentication handling for Github from components to github api client.
 0.0.1-alpha5:
   api: 0.0.1-alpha1
   state:
@@ -67,16 +101,3 @@
     feat: Add rate limit and token permissions checking support
     feat(ci): Add simple on-pr pipeline
     ci: Stub of phpunit12 compatible test framework
-0.0.1-RC1:
-  api: 0.0.1-RC1
-  state:
-    release: RC
-    api: RC
-  date: 2026-05-19
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat: Add nodeId to various DTOs
-    feat: horde/GithubApiClient#11 alternative client which delegates authorization to decorator
-    feat: horde/Core#91 Extract reusable authentication handling for Github from components to github api client.
