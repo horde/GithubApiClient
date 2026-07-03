@@ -61,6 +61,88 @@ class GithubApiClient
 
         return new GithubRepositoryList($repos);
     }
+
+    /**
+     * List releases for a repository.
+     *
+     * Paginates via Link headers so callers get every release regardless
+     * of repo size. Empty repos and repos with no published releases
+     * return an empty list without erroring.
+     */
+    public function listReleases(GithubRepository $repo): GithubReleaseList
+    {
+        $requestFactory = new ListReleasesRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create($repo);
+        $releases = [];
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+            $data = json_decode((string) $response->getBody());
+            if (is_array($data)) {
+                foreach ($data as $releaseData) {
+                    if (is_object($releaseData)) {
+                        $releases[] = GithubRelease::fromApiResponse($releaseData);
+                    }
+                }
+            }
+            $pagination = new GithubApiPagination($request, $response);
+            if (!$pagination->hasNextLink()) {
+                break;
+            }
+            $request = $pagination->nextRequest();
+        }
+        return new GithubReleaseList($releases);
+    }
+
+    /**
+     * List issue comments in a repository, or on a single issue.
+     *
+     * With `$issueNumber = null`, walks the repo-wide comments endpoint,
+     * optionally filtered to comments updated at or after `$since`
+     * (ISO 8601). Passing a specific issue number restricts to that
+     * issue's timeline. Both modes paginate via Link headers.
+     *
+     * PR conversation comments (the non-code-anchored ones) arrive
+     * through this endpoint too; use `listPullRequestComments()` for
+     * PR review comments that carry file/line anchors.
+     */
+    public function listIssueComments(
+        GithubRepository $repo,
+        ?int $issueNumber = null,
+        string $since = ''
+    ): GithubCommentList {
+        $requestFactory = new ListIssueCommentsRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            since: $since
+        );
+        $request = $requestFactory->create($repo, $issueNumber);
+        $comments = [];
+        $factory = new GithubCommentFactory();
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+            $data = json_decode((string) $response->getBody());
+            if (is_array($data)) {
+                foreach ($data as $commentData) {
+                    if (is_object($commentData)) {
+                        $comments[] = $factory->createFromApiResponse($commentData);
+                    }
+                }
+            }
+            $pagination = new GithubApiPagination($request, $response);
+            if (!$pagination->hasNextLink()) {
+                break;
+            }
+            $request = $pagination->nextRequest();
+        }
+        return new GithubCommentList($comments);
+    }
+
     public function listPullRequests(GithubRepository $repo, string $baseBranch = '', string $headRef = '', string $state = 'open'): GithubPullRequestList
     {
         $pullRequests = [];
