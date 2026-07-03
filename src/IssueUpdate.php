@@ -45,7 +45,7 @@ class IssueUpdate
     private array $assignees = [];
     private bool $assigneesSet = false;
 
-    private int|string|null $milestone = null;
+    private ?int $milestone = null;
     private bool $milestoneSet = false;
 
     private ?string $type = null;

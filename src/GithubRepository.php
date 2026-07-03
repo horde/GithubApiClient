@@ -21,9 +21,11 @@ class GithubRepository
         public readonly string $nodeId = '',
     ) {
         $this->name = $name;
-        // Extract owner from fullName
+        // Extract owner from fullName. explode('/', $fullName, 2)
+        // always yields a non-empty list, so $parts[0] is guaranteed
+        // to exist.
         $parts = explode('/', $fullName, 2);
-        $this->owner = $parts[0] ?? '';
+        $this->owner = $parts[0];
     }
     public function getName(): string
     {
@@ -55,7 +57,7 @@ class GithubRepository
                 fullName: (string) $apiArray['full_name'],
                 description: (string) ($apiArray['description'] ?? ''),
                 cloneUrl: (string) $apiArray['clone_url'],
-                nodeId: (string) ($apiArray['node_id'] ?? ''),
+                nodeId: isset($apiArray['node_id']) ? (string) $apiArray['node_id'] : '',
             );
         }
         throw new InvalidArgumentException();
@@ -80,7 +82,7 @@ class GithubRepository
     }
 
     /**
-     * @phpstan-assert-if-true array{'name': string|Stringable, 'full_name': string|Stringable, 'clone_url': string|Stringable, 'description': string|Stringable|null} $apiArray
+     * @phpstan-assert-if-true array{'name': string|Stringable, 'full_name': string|Stringable, 'clone_url': string|Stringable, 'description'?: string|Stringable|null, 'node_id'?: string|Stringable|null} $apiArray
      * @param array<mixed> $apiArray
      */
     public static function isValidArrayRepresentation(array $apiArray): bool
