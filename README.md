@@ -1,6 +1,6 @@
 # horde/githubapiclient
 
-A horde/http based client for the GitHub REST API v3.
+A horde/http based client for the GitHub REST API v3 and github related value objects.
 
 ## Installation
 
