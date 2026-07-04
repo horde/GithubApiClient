@@ -1,4 +1,14 @@
 ---
+0.1.0:
+  api: 0.1.0
+  state:
+    release: stable
+    api: stable
+  date: 2026-07-04
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "docs: Minor clarification\nfix(phpstan): resolve four pre-existing level-5 findings\nchore: Remove phpstan.neon - this is externally managed now\nfeat(api): add ListReleases and ListIssueComments request factories\nchore(ci): regenerate CI bootstrap via horde-components ci init"
 0.0.1:
   api: 0.0.1
   state:
@@ -8,18 +18,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat(issuetype): add org issue-type CRUD with assign/unassign helpers
-    feat(milestone): add milestone CRUD with assign/unassign helpers
-    feat(issue): add issues base surface with type/milestone-aware IssueUpdate
-    test: merge tests/ into test/ and style FQCN usage
-    feat: removeAllLabels method
-    feat(label): add repository-level label CRUD
-    fix(pagination): handle empty Link header without TypeError
-    feat(reviewcomment): add per-line PR review-comment CRUD
-    feat(error): typed GithubApiAccessDeniedException on 403 missing-permission
-    feat(checkrun): add createCheckRun, updateCheckRun, getCheckRun
-    chore: Update workflow dependency
+  notes: "feat(issuetype): add org issue-type CRUD with assign/unassign helpers\nfeat(milestone): add milestone CRUD with assign/unassign helpers\nfeat(issue): add issues base surface with type/milestone-aware IssueUpdate\ntest: merge tests/ into test/ and style FQCN usage\nfeat: removeAllLabels method\nfeat(label): add repository-level label CRUD\nfix(pagination): handle empty Link header without TypeError\nfeat(reviewcomment): add per-line PR review-comment CRUD\nfeat(error): typed GithubApiAccessDeniedException on 403 missing-permission\nfeat(checkrun): add createCheckRun, updateCheckRun, getCheckRun\nchore: Update workflow dependency"
 0.0.1-RC1:
   api: 0.0.1-RC1
   state:
@@ -29,10 +28,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat: Add nodeId to various DTOs
-    feat: horde/GithubApiClient#11 alternative client which delegates authorization to decorator
-    feat: horde/Core#91 Extract reusable authentication handling for Github from components to github api client.
+  notes: "feat: Add nodeId to various DTOs\nfeat: horde/GithubApiClient#11 alternative client which delegates authorization to decorator\nfeat: horde/Core#91 Extract reusable authentication handling for Github from components to github api client."
 0.0.1-alpha5:
   api: 0.0.1-alpha1
   state:
@@ -42,8 +38,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    fix(deps): lower PHP requirement from 8.3 to 8.2
+  notes: "fix(deps): lower PHP requirement from 8.3 to 8.2\n"
 0.0.1-alpha4:
   api: 0.0.1-alpha1
   state:
@@ -53,13 +48,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    style: Refine by php-cs-fixer
-    feat: Support necessary API calls to implement a Github App integration - does not include JWT generator
-    fix: Remove ephemeral script
-    feat: Make the PullRequestList countable
-    feat: add detailed error messages from GitHub API responses
-    chore(gitignore): Add some more editor related directories
+  notes: "style: Refine by php-cs-fixer\nfeat: Support necessary API calls to implement a Github App integration - does not include JWT generator\nfix: Remove ephemeral script\nfeat: Make the PullRequestList countable\nfeat: add detailed error messages from GitHub API responses\nchore(gitignore): Add some more editor related directories\n"
 0.0.1-alpha3:
   api: 0.0.1-alpha1
   state:
@@ -69,9 +58,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    feat(api): add createReview method for pull request reviews
-    feat: add GitHub Releases API support
+  notes: "feat(api): add createReview method for pull request reviews\nfeat: add GitHub Releases API support\n"
 0.0.1-alpha2:
   api: 0.0.1-alpha1
   state:
@@ -81,23 +68,4 @@
   license:
     identifier: LGPL-2.1-only
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    style: fix php-cs-fixer trailing comma issue
-    fix: add public owner and name properties to GithubRepository
-    refactor: add factory method and warning to GithubPullRequest
-    feat: add create and reopen pull request functionality
-    docs: add comprehensive documentation and examples
-    feat: add pull request merge and close support
-    feat: add label management support
-    feat: add commit status and check runs support
-    feat: add pull request review management
-    feat: add pull request comment management
-    feat: add pull request update capability
-    feat: add enhanced pull request API with user and label support
-    fix: Update TokenScopes constructor type hint for PHPStan
-    style: Apply php-cs-fixer and fix deprecations
-    fix: Convert remaining @covers annotations to PHPUnit 12 attributes
-    fix: Add missing PSR HTTP interfaces and upgrade PHPUnit annotations
-    feat: Add rate limit and token permissions checking support
-    feat(ci): Add simple on-pr pipeline
-    ci: Stub of phpunit12 compatible test framework
+  notes: "style: fix php-cs-fixer trailing comma issue\nfix: add public owner and name properties to GithubRepository\nrefactor: add factory method and warning to GithubPullRequest\nfeat: add create and reopen pull request functionality\ndocs: add comprehensive documentation and examples\nfeat: add pull request merge and close support\nfeat: add label management support\nfeat: add commit status and check runs support\nfeat: add pull request review management\nfeat: add pull request comment management\nfeat: add pull request update capability\nfeat: add enhanced pull request API with user and label support\nfix: Update TokenScopes constructor type hint for PHPStan\nstyle: Apply php-cs-fixer and fix deprecations\nfix: Convert remaining @covers annotations to PHPUnit 12 attributes\nfix: Add missing PSR HTTP interfaces and upgrade PHPUnit annotations\nfeat: Add rate limit and token permissions checking support\nfeat(ci): Add simple on-pr pipeline\nci: Stub of phpunit12 compatible test framework\n"
