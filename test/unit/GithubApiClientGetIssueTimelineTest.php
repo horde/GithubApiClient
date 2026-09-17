@@ -7,9 +7,9 @@ namespace Horde\GithubApiClient\Test\Unit;
 use Exception;
 use Horde\GithubApiClient\GithubApiClient;
 use Horde\GithubApiClient\GithubApiConfig;
-use Horde\GithubApiClient\GithubComment;
-use Horde\GithubApiClient\GithubCommentList;
 use Horde\GithubApiClient\GithubRepository;
+use Horde\GithubApiClient\GithubTimelineEvent;
+use Horde\GithubApiClient\GithubTimelineEventList;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +31,7 @@ use Psr\Http\Message\StreamInterface;
  */
 #[CoversClass(GithubApiClient::class)]
 #[AllowMockObjectsWithoutExpectations]
-final class GithubApiClientListIssueCommentsTest extends TestCase
+final class GithubApiClientGetIssueTimelineTest extends TestCase
 {
     /**
      * @return array{ClientInterface, RequestFactoryInterface, RequestInterface}
@@ -48,33 +48,11 @@ final class GithubApiClientListIssueCommentsTest extends TestCase
         return [$httpClient, $requestFactory, $request];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function commentBody(int $id, string $body): array
-    {
-        return [
-            'id' => $id,
-            'node_id' => 'IC_kwDO' . $id,
-            'body' => $body,
-            'html_url' => 'https://example.org/comment/' . $id,
-            'user' => [
-                'login' => 'octocat',
-                'id' => 1,
-                'node_id' => 'MDQ6VXNlcjE=',
-                'html_url' => 'https://example.org/octocat',
-                'avatar_url' => '',
-            ],
-            'created_at' => '2026-06-25T12:00:00Z',
-            'updated_at' => '2026-06-25T12:00:00Z',
-        ];
-    }
-
-    private function stubResponse(array $comments, string $linkHeader = ''): ResponseInterface
+    private function stubResponse(array $items, string $linkHeader = ''): ResponseInterface
     {
         $response = $this->createMock(ResponseInterface::class);
         $body = $this->createMock(StreamInterface::class);
-        $body->method('__toString')->willReturn((string) json_encode($comments));
+        $body->method('__toString')->willReturn((string) json_encode($items));
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getBody')->willReturn($body);
         $response->method('getHeaderLine')->willReturnCallback(
@@ -86,55 +64,45 @@ final class GithubApiClientListIssueCommentsTest extends TestCase
         return $response;
     }
 
-    public function testRepoWideListing(): void
+    public function testListsTimelineItemsOfDifferentShapes(): void
     {
         [$httpClient, $requestFactory] = $this->makeReadMocks();
         $httpClient->method('sendRequest')->willReturn($this->stubResponse([
-            $this->commentBody(1, 'first'),
-            $this->commentBody(2, 'second'),
+            [
+                'id' => 1,
+                'node_id' => 'TE_1',
+                'event' => 'commented',
+                'body' => 'nice work',
+                'actor' => [
+                    'login' => 'octocat',
+                    'id' => 1,
+                    'html_url' => 'https://example.org/octocat',
+                    'avatar_url' => '',
+                ],
+                'created_at' => '2026-06-25T12:00:00Z',
+            ],
+            [
+                'event' => 'committed',
+                'sha' => 'abc123',
+                'message' => 'fix bug',
+            ],
         ]));
 
         $config = new GithubApiConfig(accessToken: 'tok');
         $client = new GithubApiClient($httpClient, $requestFactory, $config);
         $repo = GithubRepository::fromFullName('horde/example');
 
-        $comments = $client->listIssueComments($repo);
+        $timeline = $client->getIssueTimeline($repo, 30);
 
-        $this->assertInstanceOf(GithubCommentList::class, $comments);
-        $this->assertCount(2, $comments);
-        $items = $comments->toArray();
-        $this->assertInstanceOf(GithubComment::class, $items[0]);
-        $this->assertSame('first', $items[0]->body);
-    }
-
-    public function testSingleIssueListing(): void
-    {
-        [$httpClient, $requestFactory] = $this->makeReadMocks();
-        $httpClient->method('sendRequest')->willReturn($this->stubResponse([
-            $this->commentBody(11, 'on-30-a'),
-            $this->commentBody(12, 'on-30-b'),
-        ]));
-
-        $config = new GithubApiConfig(accessToken: 'tok');
-        $client = new GithubApiClient($httpClient, $requestFactory, $config);
-        $repo = GithubRepository::fromFullName('horde/example');
-
-        $comments = $client->listIssueComments($repo, issueNumber: 30);
-
-        $this->assertCount(2, $comments);
-    }
-
-    public function testEmptyPage(): void
-    {
-        [$httpClient, $requestFactory] = $this->makeReadMocks();
-        $httpClient->method('sendRequest')->willReturn($this->stubResponse([]));
-
-        $config = new GithubApiConfig(accessToken: 'tok');
-        $client = new GithubApiClient($httpClient, $requestFactory, $config);
-        $repo = GithubRepository::fromFullName('horde/example');
-
-        $comments = $client->listIssueComments($repo);
-        $this->assertCount(0, $comments);
+        $this->assertInstanceOf(GithubTimelineEventList::class, $timeline);
+        $this->assertCount(2, $timeline);
+        $items = $timeline->toArray();
+        $this->assertInstanceOf(GithubTimelineEvent::class, $items[0]);
+        $this->assertSame('commented', $items[0]->event);
+        $this->assertSame('nice work', $items[0]->raw['body']);
+        $this->assertSame('committed', $items[1]->event);
+        $this->assertNull($items[1]->actor);
+        $this->assertSame('abc123', $items[1]->raw['sha']);
     }
 
     public function testRaisesOnNon200(): void
@@ -152,6 +120,6 @@ final class GithubApiClientListIssueCommentsTest extends TestCase
         $repo = GithubRepository::fromFullName('horde/does-not-exist');
 
         $this->expectException(Exception::class);
-        $client->listIssueComments($repo);
+        $client->getIssueTimeline($repo, 30);
     }
 }

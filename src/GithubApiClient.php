@@ -143,6 +143,110 @@ class GithubApiClient
         return new GithubCommentList($comments);
     }
 
+    /**
+     * List events on an issue (labeled, assigned, closed, etc.).
+     *
+     * Backed by `GET /repos/{owner}/{repo}/issues/{issue_number}/events`.
+     * Paginates via Link headers.
+     */
+    public function getIssueEvents(GithubRepository $repo, int $issueNumber): GithubIssueEventList
+    {
+        $requestFactory = new ListIssueEventsRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create($repo, $issueNumber);
+        $events = [];
+        $factory = new GithubIssueEventFactory();
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+            $data = json_decode((string) $response->getBody());
+            if (is_array($data)) {
+                foreach ($data as $eventData) {
+                    if (is_object($eventData)) {
+                        $events[] = $factory->createFromApiResponse($eventData);
+                    }
+                }
+            }
+            $pagination = new GithubApiPagination($request, $response);
+            if (!$pagination->hasNextLink()) {
+                break;
+            }
+            $request = $pagination->nextRequest();
+        }
+        return new GithubIssueEventList($events);
+    }
+
+    /**
+     * List the timeline of an issue.
+     *
+     * Backed by `GET /repos/{owner}/{repo}/issues/{issue_number}/timeline`.
+     * Broader than `getIssueEvents()`: includes cross-references,
+     * comments, and PR review activity in addition to issue events.
+     * Paginates via Link headers.
+     */
+    public function getIssueTimeline(GithubRepository $repo, int $issueNumber): GithubTimelineEventList
+    {
+        $requestFactory = new ListIssueTimelineRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create($repo, $issueNumber);
+        $events = [];
+        $factory = new GithubTimelineEventFactory();
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+            $data = json_decode((string) $response->getBody());
+            if (is_array($data)) {
+                foreach ($data as $eventData) {
+                    if (is_object($eventData)) {
+                        $events[] = $factory->createFromApiResponse($eventData);
+                    }
+                }
+            }
+            $pagination = new GithubApiPagination($request, $response);
+            if (!$pagination->hasNextLink()) {
+                break;
+            }
+            $request = $pagination->nextRequest();
+        }
+        return new GithubTimelineEventList($events);
+    }
+
+    /**
+     * List repository activity events.
+     *
+     * Backed by `GET /repos/{owner}/{repo}/events`. Paginates via
+     * Link headers.
+     */
+    public function getRepositoryEvents(GithubRepository $repo): GithubRepositoryEventList
+    {
+        $requestFactory = new ListRepositoryEventsRequestFactory($this->requestFactory, $this->config);
+        $request = $requestFactory->create($repo);
+        $events = [];
+        $factory = new GithubRepositoryEventFactory();
+        while (true) {
+            $response = $this->httpClient->sendRequest($request);
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception($this->parseErrorResponse($response));
+            }
+            $data = json_decode((string) $response->getBody());
+            if (is_array($data)) {
+                foreach ($data as $eventData) {
+                    if (is_object($eventData)) {
+                        $events[] = $factory->createFromApiResponse($eventData);
+                    }
+                }
+            }
+            $pagination = new GithubApiPagination($request, $response);
+            if (!$pagination->hasNextLink()) {
+                break;
+            }
+            $request = $pagination->nextRequest();
+        }
+        return new GithubRepositoryEventList($events);
+    }
+
     public function listPullRequests(GithubRepository $repo, string $baseBranch = '', string $headRef = '', string $state = 'open'): GithubPullRequestList
     {
         $pullRequests = [];
