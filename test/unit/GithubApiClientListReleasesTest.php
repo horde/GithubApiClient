@@ -86,10 +86,10 @@ final class GithubApiClientListReleasesTest extends TestCase
         // The pagination helper reads the Link header off the response
         // to decide whether to keep going.  An empty header ends the loop.
         $response->method('getHeaderLine')->willReturnCallback(
-            static fn (string $name): string => strtolower($name) === 'link' ? $linkHeader : ''
+            static fn(string $name): string => strtolower($name) === 'link' ? $linkHeader : ''
         );
         $response->method('hasHeader')->willReturnCallback(
-            static fn (string $name): bool => strtolower($name) === 'link' && $linkHeader !== ''
+            static fn(string $name): bool => strtolower($name) === 'link' && $linkHeader !== ''
         );
         return $response;
     }
