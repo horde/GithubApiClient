@@ -11,7 +11,7 @@
             "role": "contributor"
         }
     ],
-    "time": "2026-07-04",
+    "time": "2026-09-17",
     "repositories": [],
     "require": {
         "php": "^8.2",
@@ -41,7 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-FRAMEWORK_6_0": "0.x-dev"
+            "dev-FRAMEWORK_6_0": "1.x-dev"
         }
     }
 }
