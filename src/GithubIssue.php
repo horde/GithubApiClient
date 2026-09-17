@@ -9,9 +9,9 @@ use Stringable;
 /**
  * Represents a GitHub issue
  *
- * Note on the issue ↔ PR relationship: in a given repository, issues and pull
+ * Note on the issue to PR relationship: In a given repository, issues and pull
  * requests share a single integer counter. Every PR is also an issue from the
- * labels/comments/assignees/milestone perspective; the `isPullRequest` flag
+ * labels/comments/assignees/milestone perspective. The `isPullRequest` flag
  * surfaces that overlap so callers can detect it without a second request.
  *
  * Copyright 2026 The Horde Project (http://www.horde.org/)

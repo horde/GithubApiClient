@@ -19,6 +19,7 @@ class GithubRepository
         private readonly string $description,
         private readonly string $cloneUrl,
         public readonly string $nodeId = '',
+        public readonly ?string $jsonBody = null,
     ) {
         $this->name = $name;
         // Extract owner from fullName. explode('/', $fullName, 2)
@@ -46,6 +47,20 @@ class GithubRepository
     }
 
     /**
+     * The raw JSON body this repository was decoded from - if available.
+     * Null for
+     * repositories built any other way (e.g. {@see fromFullName()}),
+     * since there is no API response to preserve.
+     *
+     * Callers that need fields this class does not model can decode this JSON themselves
+     * rather than re-fetching or re-parsing the original payload.
+     */
+    public function getJsonBody(): ?string
+    {
+        return $this->jsonBody;
+    }
+
+    /**
      * @param non-empty-array<string|Stringable|int|null> $apiArray The Array form of the repository returned from Github JSON
      */
     public static function fromApiArray(array $apiArray): GithubRepository
@@ -58,6 +73,7 @@ class GithubRepository
                 description: (string) ($apiArray['description'] ?? ''),
                 cloneUrl: (string) $apiArray['clone_url'],
                 nodeId: isset($apiArray['node_id']) ? (string) $apiArray['node_id'] : '',
+                jsonBody: json_encode($apiArray) ?: null,
             );
         }
         throw new InvalidArgumentException();

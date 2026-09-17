@@ -120,4 +120,31 @@ class GithubRepositoryTest extends TestCase
         $reflection = new ReflectionProperty(GithubRepository::class, 'name');
         $this->assertTrue($reflection->isReadOnly());
     }
+
+    public function testFromApiArrayPreservesRawJsonBody(): void
+    {
+        $data = [
+            'name' => 'components',
+            'full_name' => 'horde/components',
+            'description' => 'Component management tool',
+            'clone_url' => 'https://github.com/horde/components.git',
+            'node_id' => 'R_kgDOabc123',
+            'visibility' => 'public',
+            'stargazers_count' => 42,
+        ];
+
+        $repo = GithubRepository::fromApiArray($data);
+
+        $this->assertNotNull($repo->jsonBody);
+        $this->assertSame($data, json_decode((string) $repo->jsonBody, true));
+        $this->assertSame($repo->jsonBody, $repo->getJsonBody());
+    }
+
+    public function testFromFullNameLeavesJsonBodyNull(): void
+    {
+        $repo = GithubRepository::fromFullName('horde/components');
+
+        $this->assertNull($repo->jsonBody);
+        $this->assertNull($repo->getJsonBody());
+    }
 }
