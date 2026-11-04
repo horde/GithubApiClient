@@ -374,6 +374,112 @@ class GithubApiClient
     }
 
     /**
+     * Read a repository's settings (GET /repos/{owner}/{repo}).
+     *
+     * @param GithubRepository $repo The repository.
+     * @return object The decoded repository JSON including default_branch.
+     * @throws GithubApiAccessDeniedException When the token may not read the repo.
+     * @throws Exception On any other non 200 response.
+     */
+    public function getRepository(GithubRepository $repo): object
+    {
+        $requestFactory = new GetRepositoryRequestFactory(
+            $this->requestFactory,
+            $this->config,
+            $repo
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            return (object) json_decode((string) $response->getBody());
+        }
+
+        $this->throwIfRepositorySettingsForbidden($response, $repo);
+        throw new Exception($this->parseErrorResponse($response));
+    }
+
+    /**
+     * Update a repository's settings (PATCH /repos/{owner}/{repo}).
+     *
+     * Used to set the default branch.
+     * Only the fields set on the update are sent.
+     *
+     * @param GithubRepository $repo The repository.
+     * @param RepositoryUpdate $update The settings to change.
+     * @return object The decoded updated repository JSON.
+     * @throws GithubApiAccessDeniedException When the token lacks the
+     *         administration permission needed to change settings.
+     * @throws Exception On any other non 200 response.
+     */
+    public function updateRepository(GithubRepository $repo, RepositoryUpdate $update): object
+    {
+        if ($this->streamFactory === null) {
+            throw new Exception('StreamFactory is required for updateRepository. Please provide it in the constructor.');
+        }
+
+        $requestFactory = new UpdateRepositoryRequestFactory(
+            $this->requestFactory,
+            $this->streamFactory,
+            $this->config,
+            $repo,
+            $update
+        );
+        $request = $requestFactory->create();
+        $response = $this->httpClient->sendRequest($request);
+
+        if ($response->getStatusCode() === 200) {
+            return (object) json_decode((string) $response->getBody());
+        }
+
+        $this->throwIfRepositorySettingsForbidden($response, $repo);
+        throw new Exception($this->parseErrorResponse($response));
+    }
+
+    /**
+     * Raise a typed access denied exception for a repository settings call.
+     *
+     * Changing repository settings such as the default branch needs the
+     * administration permission. GitHub answers an underprivileged token
+     * with 403. A fine-grained token which cannot even see the repo gets a
+     * 404. Both mean "this authorization is insufficient".
+     *
+     * This exception provides a human readable, manual instruction to the caller
+     * and a machine digestable typed object to react to.
+     *
+     * @param ResponseInterface $response The failed response.
+     * @param GithubRepository $repo The target repository.
+     * @throws GithubApiAccessDeniedException When status is 403 or 404.
+     */
+    private function throwIfRepositorySettingsForbidden(
+        ResponseInterface $response,
+        GithubRepository $repo
+    ): void {
+        $status = $response->getStatusCode();
+        if ($status !== 403 && $status !== 404) {
+            return;
+        }
+
+        $hint = sprintf(
+            'The used GitHub authorization may not change settings for %s/%s. '
+                . 'Changing the default branch requires the repository administration '
+                . 'permission (classic token scope `repo` or a fine-grained token with '
+                . 'Administration: write). Set it manually at '
+                . 'https://github.com/%s/%s/settings/branches or replace the authorization and retry.',
+            $repo->owner,
+            $repo->name,
+            $repo->owner,
+            $repo->name
+        );
+
+        throw new GithubApiAccessDeniedException(
+            statusCode: $status,
+            responseBody: (string) $response->getBody(),
+            hint: $hint
+        );
+    }
+
+    /**
      * List issues in a repository
      *
      * Returns both regular issues and pull requests (every PR is also an issue
